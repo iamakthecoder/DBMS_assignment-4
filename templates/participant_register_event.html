@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Events</title>
+    <!-- CSS styles omitted for brevity -->
+</head>
+<body>
+    <h1>Register in Events</h1>
+    <form id="event-form" action="/participant_register_events" method="POST">
+        <table>
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Date</th>
+                    <th>Type of Event</th>
+                    <th>Register as participant</th> <!-- Checkbox 1 column -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.name }}</td>
+                    <td>{{ event.date }}</td>
+                    <td>{{ event.type }}</td>
+                    <td><input type="checkbox" name="participant" value="{{ event.id }}"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        function checkOneCheckbox(checkbox) {
+            var checkboxes = checkbox.parentNode.parentNode.getElementsByTagName('input');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] !== checkbox && checkboxes[i].type === 'checkbox') {
+                    checkboxes[i].checked = false;
+                } 
+            }
+        }
+    </script>
+</body>
+</html>

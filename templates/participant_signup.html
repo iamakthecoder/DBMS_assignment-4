@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Participant Signup</title>
+</head>
+<body>
+
+<h2>Participant Signup</h2>
+
+<form action="/participant_signup" method="post">
+  <label for="name">Name:</label><br>
+  <input type="text" id="name" name="name" required><br><br>
+
+  <label for="college_name">College Name:</label><br>
+  <select id="college_name" name="college_name" required>
+    {% for college in college_names %}
+    <option value="{{ college }}">{{ college }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  <label for="username">Username:</label><br>
+  <input type="text" id="username" name="username" required><br><br>
+
+  <label for="password">Password:</label><br>
+  <input type="password" id="password" name="password" required><br><br>
+
+  <input type="submit" value="Submit">
+</form>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events</title>
+</head>
+<body>
+
+<h2>Registered as Participant</h2>
+<ul>
+  {% for event in participant_events %}
+  <li>
+    <strong>Name:</strong> {{ event.name }}<br>
+    <strong>Type:</strong> {{ event.type }}<br>
+    <strong>Date:</strong> {{ event.date }}
+  </li>
+  {% endfor %}
+</ul>
+
+<h2>Registered as Volunteer</h2>
+<ul>
+  {% for event in volunteer_events %}
+  <li>
+    <strong>Name:</strong> {{ event.name }}<br>
+    <strong>Type:</strong> {{ event.type }}<br>
+    <strong>Date:</strong> {{ event.date }}
+  </li>
+  {% endfor %}
+</ul>
+
+</body>
+</html>
