@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard</title>
+</head>
+<body>
+    <h1>Organizer Dashboard</h1>
+    <table border="1">
+        <tr>
+            <th>Event Name</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Details</th>
+        </tr>
+        {% for event in events %}
+        <tr>
+            <td>{{ event.name }}</td>
+            <td>{{ event.type }}</td>
+            <td>{{ event.date }}</td>
+            <td><a href="/event/{{ event.id }}/details">View Details</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

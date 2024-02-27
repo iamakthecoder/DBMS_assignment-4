@@ -19,6 +19,10 @@ class Participant(db.Model):
     user_name  = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
     name = db.Column(db.String(100),nullable= False)
     college_name = db.Column(db.String(255), db.ForeignKey('college.name'))
+
+class Organizer(db.Model):
+    user_name = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+    name = db.Column(db.String(100),nullable= False)
     
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,6 +62,14 @@ def create_user_participant(username, password, participant_name, college):
     db.session.commit()
     participant = Participant(user_name=username, name=participant_name, college_name = college)
     db.session.add(participant)
+    db.session.commit()
+
+def create_user_organizer(username, password, organizer_name):
+    user = Users(username=username, password=password, user_type = 'Organizer')
+    db.session.add(user)
+    db.session.commit()
+    organizer = Organizer(user_name=username, name=organizer_name)
+    db.session.add(organizer)
     db.session.commit()
 
 def get_events_not_registered(username):
@@ -102,3 +114,23 @@ def get_college_names():
     # Extract names from the result
     college_names = [name[0] for name in college_names]
     return college_names
+
+def get_all_events():
+    return Event.query.all()
+
+def get_event_details(event_id):
+    return Event.query.get(event_id)
+
+def get_event_volunteers(event_id):
+    # Joining EventVolunteer and Student tables
+    query = db.session.query(EventVolunteer, Student).join(Student, EventVolunteer.volunteer_id == Student.user_name).filter(EventVolunteer.event_id == event_id)
+    
+    # Extracting required information
+    volunteers = []
+    for event_volunteer, student in query:
+        volunteers.append({
+            'name': student.name,
+            'roll_number': student.roll_number
+        })
+    
+    return volunteers

@@ -46,6 +46,22 @@ def participant_signup():
     college_names = get_college_names()
     return render_template('participant_signup.html', college_names=college_names, error=error)
 
+@app.route('/organizer_signup', methods=['GET', 'POST'])
+def organizer_signup():
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        name = request.form['name']
+        # Check if username already exists
+        if not is_user_exists(username):
+            create_user_organizer(username, password, name)
+            return redirect(url_for('index'))
+        else:
+            error = "Username already exists"
+
+    return render_template('organizer_signup.html', error=error)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -73,6 +89,21 @@ def Participant_dashboard():
         return redirect(url_for('index'))
     username = session['username']
     return render_template('participant_dashboard.html')
+
+@app.route('/Organizer_dashboard')
+def Organizer_dashboard():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    events = get_all_events()
+    return render_template('organizer_dashboard.html', events=events)
+
+@app.route('/event/<int:event_id>/details')
+def event_details(event_id):
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    event = get_event_details(event_id)
+    volunteers = get_event_volunteers(event_id)
+    return render_template('event_details.html', event=event, volunteers=volunteers)
 
 
 @app.route('/student_register_events', methods=['GET', 'POST'])
