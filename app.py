@@ -11,10 +11,15 @@ db.init_app(app)
 def index():
     if 'username' in session:
         session.pop('username')
+    if 'user_type' in session:
+        session.pop('user_type')
     return render_template('index.html')
 
 @app.route('/student_signup', methods=['GET', 'POST'])
 def student_signup():
+    if 'username' in session:
+        return redirect(url_for('index'))
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -26,11 +31,13 @@ def student_signup():
             create_user_student(username, password, roll_no, name, dept)
             return redirect(url_for('index'))
         else:
-            return render_template('student_signup.html', error="Username already exists")
-    return render_template('student_signup.html')
+            error="Username already exists"
+    return render_template('student_signup.html', error=error)
 
 @app.route('/participant_signup', methods=['GET', 'POST'])
 def participant_signup():
+    if 'username' in session:
+        return redirect(url_for('index'))
     error = None
     if request.method == 'POST':
         username = request.form['username']
@@ -48,6 +55,8 @@ def participant_signup():
 
 @app.route('/organizer_signup', methods=['GET', 'POST'])
 def organizer_signup():
+    if 'username' in session:
+        return redirect(url_for('index'))
     error = None
     if request.method == 'POST':
         username = request.form['username']
@@ -64,6 +73,8 @@ def organizer_signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'username' in session:
+        return redirect(url_for('index'))
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -71,6 +82,7 @@ def login():
         # Check if username and password are correct
         if user and user.password == password:
             session['username'] = username
+            session['user_type'] = user.user_type
             return redirect(url_for(f"{user.user_type}_dashboard"))
         else:
             return render_template('login.html', error="Invalid username or password")
@@ -80,20 +92,27 @@ def login():
 def Student_dashboard():
     if 'username' not in session:
         return redirect(url_for('index'))
-    username = session['username']
+    if session['user_type']!='Student':
+        return redirect(url_for('index'))
+
     return render_template('student_dashboard.html')
 
 @app.route('/Participant_dashboard')
 def Participant_dashboard():
     if 'username' not in session:
         return redirect(url_for('index'))
-    username = session['username']
+    if session['user_type']!='Participant':
+        return redirect(url_for('index'))
+
     return render_template('participant_dashboard.html')
 
 @app.route('/Organizer_dashboard')
 def Organizer_dashboard():
     if 'username' not in session:
         return redirect(url_for('index'))
+    if session['user_type']!='Organizer':
+        return redirect(url_for('index'))
+    
     events = get_all_events()
     return render_template('organizer_dashboard.html', events=events)
 
@@ -101,6 +120,9 @@ def Organizer_dashboard():
 def event_details(event_id):
     if 'username' not in session:
         return redirect(url_for('index'))
+    if session['user_type']!='Organizer':
+        return redirect(url_for('index'))
+    
     event = get_event_details(event_id)
     volunteers = get_event_volunteers(event_id)
     return render_template('event_details.html', event=event, volunteers=volunteers)
@@ -110,6 +132,8 @@ def event_details(event_id):
 def student_register_events():
     if 'username' not in session:
         return redirect(url_for('index'))  # Redirect to login if not logged in
+    if session['user_type']!='Student':
+        return redirect(url_for('index'))
     
     username = session['username']
     
@@ -132,7 +156,9 @@ def student_register_events():
 @app.route('/student_registered_in_events')
 def student_registered_in_events():
     if 'username' not in session:
-        return redirect(url_for('login'))  # Redirect to login if user is not logged in
+        return redirect(url_for('index'))  # Redirect to login if user is not logged in
+    if session['user_type']!='Student':
+        return redirect(url_for('index'))
 
     # Get the username from the session
     username = session['username']
@@ -150,6 +176,8 @@ def student_registered_in_events():
 def participant_register_events():
     if 'username' not in session:
         return redirect(url_for('index'))  # Redirect to login if not logged in
+    if session['user_type']!='Participant':
+        return redirect(url_for('index'))
     
     username = session['username']
     
@@ -169,7 +197,9 @@ def participant_register_events():
 @app.route('/participant_registered_in_events')
 def participant_registered_in_events():
     if 'username' not in session:
-        return redirect(url_for('login'))  # Redirect to login if user is not logged in
+        return redirect(url_for('index'))  # Redirect to login if user is not logged in
+    if session['user_type']!='Participant':
+        return redirect(url_for('index'))
 
     # Get the username from the session
     username = session['username']
