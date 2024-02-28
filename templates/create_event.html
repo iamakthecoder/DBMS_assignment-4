@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Event</title>
+</head>
+<body>
+
+<h2>Create Event</h2>
+
+<form action="/create_event" method="post">
+  <label for="name">Event Name:</label><br>
+  <input type="text" id="name" name="name" required><br><br>
+
+  <label for="type">Event Type:</label><br>
+  <input type="text" id="type" name="type" required><br><br>
+
+  <label for="date">Event Date:</label><br>
+  <input type="date" id="date" name="date" required><br><br>
+
+  <input type="submit" value="Create Event">
+</form>
+
+</body>
+</html>

@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from database import *
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Change this to a secure secret key
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://21CS10008:21CS10008@10.5.18.68/21CS10008'
+app.secret_key = 'secret_key'  # Change this to a secure secret key
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://21CS10008:21CS10008@10.5.18.68/21CS10008'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sujitkumar@localhost/postgres'
 db.init_app(app)
 
 
@@ -44,14 +45,20 @@ def participant_signup():
         password = request.form['password']
         name = request.form['name']
         college = request.form['college_name']
+        food_id = request.form.get('food', None)
+        accommodation_id = request.form.get('accommodation', None)
+        
         # Check if username already exists
         if not is_user_exists(username):
-            create_user_participant(username, password,  name, college)
+            create_user_participant(username, password, name, college, food_id, accommodation_id)
             return redirect(url_for('index'))
         else:
             error = "Username already exists"
+    
     college_names = get_college_names()
-    return render_template('participant_signup.html', college_names=college_names, error=error)
+    food_options = get_food_options()
+    accommodation_options = get_accommodation_options()
+    return render_template('participant_signup.html', college_names=college_names, food_options=food_options, accommodation_options=accommodation_options, error=error)
 
 @app.route('/organizer_signup', methods=['GET', 'POST'])
 def organizer_signup():
@@ -112,9 +119,39 @@ def Organizer_dashboard():
         return redirect(url_for('index'))
     if session['user_type']!='Organizer':
         return redirect(url_for('index'))
+
+    return render_template('organizer_dashboard.html')
+
+@app.route('/organizer_view_events')
+def organizer_view_events():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Organizer':
+        return redirect(url_for('index'))
     
-    events = get_all_events()
-    return render_template('organizer_dashboard.html', events=events)
+    org_username = session['username']
+
+    events = get_all_events(org_username)
+    return render_template('organizer_view_events.html', events=events)
+
+@app.route('/create_event', methods=['GET', 'POST'])
+def create_event():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Organizer':
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        name = request.form['name']
+        type = request.form['type']
+        date = request.form['date']
+        organizer_username = session['username']  # Assuming username is stored in session
+
+        create_new_event(name, type, date, organizer_username)
+        return redirect(url_for('Organizer_dashboard'))
+        
+    return render_template('create_event.html')
+    
 
 @app.route('/event/<int:event_id>/details')
 def event_details(event_id):

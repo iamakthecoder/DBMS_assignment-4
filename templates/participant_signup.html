@@ -26,6 +26,22 @@
   <label for="password">Password:</label><br>
   <input type="password" id="password" name="password" required><br><br>
 
+  <label for="food">Food:</label><br>
+  <select id="food" name="food">
+    <option value="">None</option>
+    {% for food in food_options %}
+    <option value="{{ food.food_id }}">{{ food.food_desc }} - ${{ food.price }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  <label for="accommodation">Accommodation:</label><br>
+  <select id="accommodation" name="accommodation">
+    <option value="">None</option>
+    {% for accommodation in accommodation_options %}
+    <option value="{{ accommodation.accommodation_id }}">{{ accommodation.name }} - ${{ accommodation.price_per_day }}</option>
+    {% endfor %}
+  </select><br><br>
+
   <input type="submit" value="Submit">
 </form>
 

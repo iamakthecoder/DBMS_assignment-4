@@ -1,6 +1,8 @@
 # database.py
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.schema import ForeignKeyConstraint
+from sqlalchemy.sql import null
 
 db = SQLAlchemy()
 
@@ -10,25 +12,30 @@ class Users(db.Model):
     user_type = db.Column(db.String(100), nullable=False)
 
 class Student(db.Model):
-    user_name = db.Column(db.String(100), db.ForeignKey('users.username'))
-    name = db.Column(db.String(100),nullable= False)
+    user_name = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
     roll_number= db.Column(db.String(100),primary_key=True)
+    name = db.Column(db.String(100),nullable= False)
     department= db.Column(db.String(100),nullable=False)
 
 class Participant(db.Model):
     user_name  = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+    participant_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100),nullable= False)
     college_name = db.Column(db.String(255), db.ForeignKey('college.name'))
+    food_id = db.Column(db.Integer, db.ForeignKey('food.food_id'), nullable=True)
+    accommodation_id = db.Column(db.Integer, db.ForeignKey('accommodation.accommodation_id'), nullable=True)
 
 class Organizer(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+    organizer_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100),nullable= False)
     
 class Event(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
+    organizer_username = db.Column(db.String(100), db.ForeignKey('users.username'), nullable=False)
 
 class College(db.Model):
     name = db.Column(db.String(255), primary_key=True)
@@ -36,11 +43,21 @@ class College(db.Model):
 
 class EventParticipant(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), primary_key=True)
-    participant_id = db.Column(db.String, db.ForeignKey('users.username'), primary_key=True)
+    participant_id = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
 
 class EventVolunteer(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), primary_key=True)
-    volunteer_id = db.Column(db.String, db.ForeignKey('users.username'), primary_key=True)
+    volunteer_id = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+
+class Food(db.Model):
+    food_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    food_desc = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+class Accommodation(db.Model):
+    accommodation_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.Text, nullable=False)
+    price_per_day = db.Column(db.Float, nullable=False)
 
 def is_user_exists(username):
     return Users.query.filter_by(username=username).first() is not None
@@ -56,11 +73,23 @@ def create_user_student(username, password, roll_no, stud_name, dept):
     db.session.add(stud)
     db.session.commit()
 
-def create_user_participant(username, password, participant_name, college):
+def create_user_participant(username, password, participant_name, college, food_id, accommodation_id):
     user = Users(username=username, password=password, user_type='Participant')
     db.session.add(user)
     db.session.commit()
-    participant = Participant(user_name=username, name=participant_name, college_name = college)
+    participant = Participant(
+        user_name=username,
+        name=participant_name,
+        college_name=college
+    )
+    if (food_id is not None) and (food_id!=""):
+        participant.food_id=food_id
+    else:
+        participant.food_id=null()
+    if (accommodation_id is not None) and (accommodation_id!=""):
+        participant.accommodation_id=accommodation_id
+    else:
+        participant.accommodation_id=null()
     db.session.add(participant)
     db.session.commit()
 
@@ -115,8 +144,8 @@ def get_college_names():
     college_names = [name[0] for name in college_names]
     return college_names
 
-def get_all_events():
-    return Event.query.all()
+def get_all_events(username):
+    return Event.query.filter_by(organizer_username=username).all()
 
 def get_event_details(event_id):
     return Event.query.get(event_id)
@@ -134,3 +163,19 @@ def get_event_volunteers(event_id):
         })
     
     return volunteers
+
+def get_food_options():
+    # Assuming Food is your SQLAlchemy model for the food table
+    return Food.query.all()
+
+def get_accommodation_options():
+    # Assuming Accommodation is your SQLAlchemy model for the accommodation table
+    return Accommodation.query.all()
+
+def get_organizer(username):
+    return Organizer.query.filter_by(user_name=username).first()
+
+def create_new_event(name, type, date, organizer_username):
+    event = Event(name=name, type=type, date=date, organizer_username=organizer_username)
+    db.session.add(event)
+    db.session.commit()
