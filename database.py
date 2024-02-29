@@ -3,6 +3,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.sql import null
+from sqlalchemy import func
 
 db = SQLAlchemy()
 
@@ -36,6 +37,7 @@ class Event(db.Model):
     type = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
     organizer_username = db.Column(db.String(100), db.ForeignKey('users.username'), nullable=False)
+    winner_username = db.Column(db.String(100), db.ForeignKey('users.username'), nullable=True)
 
 class College(db.Model):
     name = db.Column(db.String(255), primary_key=True)
@@ -179,3 +181,13 @@ def create_new_event(name, type, date, organizer_username):
     event = Event(name=name, type=type, date=date, organizer_username=organizer_username)
     db.session.add(event)
     db.session.commit()
+
+def get_participants_for_event(event_id):
+    participants = db.session.query(Users.username, func.coalesce(Student.name, Participant.name)).\
+        join(EventParticipant, EventParticipant.participant_id == Users.username).\
+        join(Users, Users.username == EventParticipant.participant_id).\
+        outerjoin(Student, Student.user_name == Users.username).\
+        outerjoin(Participant, Participant.user_name == Users.username).\
+        filter(EventParticipant.event_id == event_id).all()
+    
+    return participants

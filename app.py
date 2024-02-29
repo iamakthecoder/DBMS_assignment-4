@@ -153,16 +153,20 @@ def create_event():
     return render_template('create_event.html')
     
 
-@app.route('/event/<int:event_id>/details')
+@app.route('/event/<int:event_id>/details', methods=['GET', 'POST'])
 def event_details(event_id):
     if 'username' not in session:
         return redirect(url_for('index'))
     if session['user_type']!='Organizer':
         return redirect(url_for('index'))
     
+    if request.method == 'POST':
+        
+    
     event = get_event_details(event_id)
     volunteers = get_event_volunteers(event_id)
-    return render_template('event_details.html', event=event, volunteers=volunteers)
+    participants = get_participants_for_event(event_id)
+    return render_template('event_details.html', event=event, volunteers=volunteers, participants=participants)
 
 
 @app.route('/student_register_events', methods=['GET', 'POST'])
