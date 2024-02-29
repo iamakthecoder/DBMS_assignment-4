@@ -4,26 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Signup</title>
+    <link rel="stylesheet" type="text/css" href="signup.css">
 </head>
 <body>
-    <h1>Student Signup</h1>
-    <form action="/student_signup" method="POST">
-        <label for="roll_number">Roll Number:</label><br>
-        <input type="text" id="roll_number" name="roll_number" required><br><br>
+    <div class="signup">
+        <h1>Student Signup</h1>
+        <form action="/student_signup" method="POST" class="form">
+            <label for="roll_number">Roll Number:</label>
+            <input type="text" id="roll_number" name="roll_number" class="input" required>
 
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" required><br><br>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" class="input"  required>
 
-        <label for="department">Department:</label><br>
-        <input type="text" id="department" name="department" required><br><br>
+            <label for="department">Department:</label>
+            <input type="text" id="department" name="department"  class="input" required>
 
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" class="input"  required>
 
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="input"  required>
 
-        <input type="submit" value="Submit">
-    </form>
+            <input type="submit" value="Submit" class="submit">
+        </form> 
+    </div>
+    
 </body>
 </html>

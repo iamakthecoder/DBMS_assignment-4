@@ -4,35 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>University Cultural Festival</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            border: 2px solid #333;
-            border-radius: 5px;
-            background-color: #f0f0f0;
-            color: #333;
-        }
-        .btn:hover {
-            background-color: #ccc;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="indexstyles.css">
 </head>
 <body>
-    <h1>Welcome to the University Cultural Festival</h1>
+    <h1 class="welcome">Welcome to the University Cultural Festival</h1>
     <div>
-        <a href="/student_signup" class="btn">Student Signup</a>
-        <a href="/organizer_signup" class="btn">Organizer Signup</a>
-        <a href="/participant_signup" class="btn">Participant Signup</a>
-        <a href="/login" class="btn">Login</a>
+        <div class="signup">
+            <a href="/student_signup" class="btn">Student Signup</a>
+        </div>
+        <div class="signup">
+            <a href="/organizer_signup" class="btn">Organizer Signup</a>
+        </div>
+        <div class="signup">
+            <a href="/participant_signup" class="btn">Participant Signup</a>
+        </div>
+        <div class="signup">
+            <a href="/login" class="btn">Login</a>
+            
+        </div>
     </div>
 </body>
 </html>
