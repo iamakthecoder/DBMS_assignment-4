@@ -260,8 +260,21 @@ def participant_registered_in_events():
 
     return render_template('participant_registered_in_events.html', participant_events=participant_events)
 
+@app.route('/notifications')
+def notifications():
+    all_notifications = get_all_notifications()
+    # You can now use all_notifications in your template or jsonify it if you're building an API
+    return render_template('notifications.html', notifications=all_notifications)
+
+@app.route('/logout')
+def logout():
+    return redirect(url_for('index'))
+
 
 if __name__=="__main__":
     with app.app_context():
         db.create_all()
+    with app.app_context():
+        with db.engine.connect() as connection:
+            create_triggers_on_connect(connection.connection, None)
     app.run(debug=True)

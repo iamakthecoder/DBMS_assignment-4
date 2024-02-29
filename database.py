@@ -1,7 +1,6 @@
 # database.py
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.sql import null
 from sqlalchemy import func
 
@@ -13,21 +12,21 @@ class Users(db.Model):
     user_type = db.Column(db.String(100), nullable=False)
 
 class Student(db.Model):
-    user_name = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+    user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
     roll_number= db.Column(db.String(100),primary_key=True)
     name = db.Column(db.String(100),nullable= False)
     department= db.Column(db.String(100),nullable=False)
 
 class Participant(db.Model):
-    user_name  = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+    user_name  = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
     participant_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100),nullable= False)
-    college_name = db.Column(db.String(255), db.ForeignKey('college.name'))
-    food_id = db.Column(db.Integer, db.ForeignKey('food.food_id'), nullable=True)
-    accommodation_id = db.Column(db.Integer, db.ForeignKey('accommodation.accommodation_id'), nullable=True)
+    name = db.Column(db.String(100), nullable=False)
+    college_name = db.Column(db.String(255), db.ForeignKey('college.name', ondelete='CASCADE'))
+    food_id = db.Column(db.Integer, db.ForeignKey('food.food_id', ondelete='SET NULL'), nullable=True)
+    accommodation_id = db.Column(db.Integer, db.ForeignKey('accommodation.accommodation_id', ondelete='SET NULL'), nullable=True)
 
 class Organizer(db.Model):
-    user_name = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+    user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
     organizer_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100),nullable= False)
     
@@ -36,20 +35,20 @@ class Event(db.Model):
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
-    organizer_username = db.Column(db.String(100), db.ForeignKey('users.username'), nullable=False)
-    winner_username = db.Column(db.String(100), db.ForeignKey('users.username'), nullable=True)
+    organizer_username = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), nullable=False)
+    winner_username = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='SET NULL'), nullable=True)
 
 class College(db.Model):
     name = db.Column(db.String(255), primary_key=True)
     location = db.Column(db.Text, nullable=False)
 
 class EventParticipant(db.Model):
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), primary_key=True)
-    participant_id = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), primary_key=True)
+    participant_id = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
 
 class EventVolunteer(db.Model):
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), primary_key=True)
-    volunteer_id = db.Column(db.String(100), db.ForeignKey('users.username'), primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), primary_key=True)
+    volunteer_id = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
 
 class Food(db.Model):
     food_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -60,6 +59,51 @@ class Accommodation(db.Model):
     accommodation_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
     price_per_day = db.Column(db.Float, nullable=False)
+
+class Notifications(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    notification_text = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
+
+# Define the SQL command for the trigger function
+create_func_winner_update = """
+CREATE OR REPLACE FUNCTION winner_updated_func()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO notifications (notification_text, timestamp)
+    VALUES ('Winner is updated for the ' || (SELECT name FROM event WHERE id = NEW.id), CURRENT_TIMESTAMP);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+"""
+
+# Define the SQL command for creating the trigger for winner update
+create_trigger_winner_update = """
+CREATE TRIGGER winner_updated_trigger
+AFTER UPDATE OF winner_username ON event
+FOR EACH ROW
+WHEN (OLD.winner_username IS DISTINCT FROM NEW.winner_username)
+EXECUTE FUNCTION winner_updated_func();
+"""
+
+def create_triggers_on_connect(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+
+    #check if function already exist
+    cursor.execute("SELECT proname FROM pg_proc WHERE proname = 'winner_updated_func'")
+    func_exists = cursor.fetchone() is not None
+    if not func_exists:
+        cursor.execute(create_func_winner_update)
+        dbapi_connection.commit()
+    
+    # Check if trigger already exist
+    cursor.execute("SELECT * FROM pg_trigger WHERE tgname = 'winner_updated_trigger'")
+    trigger_exists = cursor.fetchone() is not None 
+    if not trigger_exists:
+        cursor.execute(create_trigger_winner_update)
+        dbapi_connection.commit()
+    
+    cursor.close()
 
 def is_user_exists(username):
     return Users.query.filter_by(username=username).first() is not None
@@ -215,3 +259,8 @@ def get_name_by_username(username):
         return participant.name
 
     return None
+
+def get_all_notifications():
+    # Query all notifications and order them by timestamp in descending order
+    notifications = Notifications.query.order_by(Notifications.timestamp.desc()).all()
+    return notifications
