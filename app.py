@@ -162,7 +162,21 @@ def event_details(event_id):
     
     event = get_event_details(event_id)
     volunteers = get_event_volunteers(event_id)
-    return render_template('event_details.html', event=event, volunteers=volunteers)
+    participants = get_participants_for_event(event_id)
+    winner_name = get_name_by_username(event.winner_username)
+    return render_template('event_details.html', event=event, winner_name=winner_name, volunteers=volunteers, participants=participants)
+
+@app.route('/submit_winner/<int:event_id>', methods=['GET', 'POST'])
+def submit_winner(event_id):
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Organizer':
+        return redirect(url_for('index'))
+    
+    if request.method=='POST':
+        winner_username = request.form['winner']
+        update_winner(event_id, winner_username)
+        return redirect(url_for('Organizer_dashboard'))
 
 
 @app.route('/student_register_events', methods=['GET', 'POST'])
@@ -246,8 +260,21 @@ def participant_registered_in_events():
 
     return render_template('participant_registered_in_events.html', participant_events=participant_events)
 
+@app.route('/notifications')
+def notifications():
+    all_notifications = get_all_notifications()
+    # You can now use all_notifications in your template or jsonify it if you're building an API
+    return render_template('notifications.html', notifications=all_notifications)
+
+@app.route('/logout')
+def logout():
+    return redirect(url_for('index'))
+
 
 if __name__=="__main__":
     with app.app_context():
         db.create_all()
+    with app.app_context():
+        with db.engine.connect() as connection:
+            create_triggers_on_connect(connection.connection, None)
     app.run(debug=True)
