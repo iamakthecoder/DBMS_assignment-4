@@ -10,7 +10,7 @@
     <h2>{{ event.name }}</h2>
     <p><strong>Type:</strong> {{ event.type }}</p>
     <p><strong>Date:</strong> {{ event.date }}</p>
-    <p><strong>Winner:</strong> {{ event.winner }}</p>
+    <p><strong>Winner:</strong> {{ winner_name}} - username: {{ event.winner_username }}</p>
 
     <h2>Volunteers</h2>
     <ul>
@@ -20,10 +20,10 @@
     </ul>
 
     <h2>Select Participant</h2>
-    <form action="/submit_winner" method="post">
+    <form action="/submit_winner/{{ event.id }}" method="post">
         <select name="winner">
             {% for participant in participants %}
-            <option value="{{ participant.username }}">{{ participant.name }}</option>
+            <option value="{{ participant[0] }}">{{ participant[1] }} - {{ participant[0] }}</option>
             {% endfor %}
         </select>
         <input type="submit" value="Submit Winner">

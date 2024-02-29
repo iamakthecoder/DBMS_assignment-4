@@ -153,20 +153,30 @@ def create_event():
     return render_template('create_event.html')
     
 
-@app.route('/event/<int:event_id>/details', methods=['GET', 'POST'])
+@app.route('/event/<int:event_id>/details')
 def event_details(event_id):
     if 'username' not in session:
         return redirect(url_for('index'))
     if session['user_type']!='Organizer':
         return redirect(url_for('index'))
     
-    if request.method == 'POST':
-        
-    
     event = get_event_details(event_id)
     volunteers = get_event_volunteers(event_id)
     participants = get_participants_for_event(event_id)
-    return render_template('event_details.html', event=event, volunteers=volunteers, participants=participants)
+    winner_name = get_name_by_username(event.winner_username)
+    return render_template('event_details.html', event=event, winner_name=winner_name, volunteers=volunteers, participants=participants)
+
+@app.route('/submit_winner/<int:event_id>', methods=['GET', 'POST'])
+def submit_winner(event_id):
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Organizer':
+        return redirect(url_for('index'))
+    
+    if request.method=='POST':
+        winner_username = request.form['winner']
+        update_winner(event_id, winner_username)
+        return redirect(url_for('Organizer_dashboard'))
 
 
 @app.route('/student_register_events', methods=['GET', 'POST'])

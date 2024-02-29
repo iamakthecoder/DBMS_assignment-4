@@ -185,9 +185,33 @@ def create_new_event(name, type, date, organizer_username):
 def get_participants_for_event(event_id):
     participants = db.session.query(Users.username, func.coalesce(Student.name, Participant.name)).\
         join(EventParticipant, EventParticipant.participant_id == Users.username).\
-        join(Users, Users.username == EventParticipant.participant_id).\
         outerjoin(Student, Student.user_name == Users.username).\
         outerjoin(Participant, Participant.user_name == Users.username).\
         filter(EventParticipant.event_id == event_id).all()
     
     return participants
+
+def update_winner(event_id, winner_username):
+    # Fetch the event object
+    event = Event.query.get(event_id)
+    
+    # Check if the event exists
+    if event:
+        # Update the winner_username
+        event.winner_username = winner_username
+        
+        # Commit the changes to the database
+        db.session.commit()
+
+def get_name_by_username(username):
+    # Check if the username belongs to a Student
+    student = Student.query.filter_by(user_name=username).first()
+    if student:
+        return student.name
+
+    # Check if the username belongs to a Participant
+    participant = Participant.query.filter_by(user_name=username).first()
+    if participant:
+        return participant.name
+
+    return None
