@@ -266,6 +266,19 @@ def notifications():
     # You can now use all_notifications in your template or jsonify it if you're building an API
     return render_template('notifications.html', notifications=all_notifications)
 
+@app.route('/see_winners')
+def student_see_winners():
+    if 'username' not in session:
+        return redirect(url_for('index'))  # Redirect to login if user is not logged in
+    if session['user_type']!='Student' and session['user_type']!='Participant':
+        return redirect(url_for('index'))
+    
+    username = session['username']
+
+    events_and_winners = get_events_and_winners(username)
+
+    return render_template('seeWinner.html', events_with_winners=events_and_winners)
+
 @app.route('/logout')
 def logout():
     return redirect(url_for('index'))

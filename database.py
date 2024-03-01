@@ -264,3 +264,14 @@ def get_all_notifications():
     # Query all notifications and order them by timestamp in descending order
     notifications = Notifications.query.order_by(Notifications.timestamp.desc()).all()
     return notifications
+
+def get_events_and_winners(username):
+    # Query events and winners for the given participant username
+    
+    events_with_winners = db.session.query(Event.name, Event.winner_username, func.coalesce(Student.name, Participant.name)).\
+        join(EventParticipant, Event.id == EventParticipant.event_id).\
+        outerjoin(Student, Student.user_name == Event.winner_username).\
+        outerjoin(Participant, Participant.user_name == Event.winner_username).\
+        filter(EventParticipant.participant_id == username).all()
+    
+    return events_with_winners

@@ -17,11 +17,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for event_name, winner_info in events.items() %}
+            {% for event_name, winner_username, winner_name in events_with_winners %}
             <tr>
                 <td>{{ event_name }}</td>
-                <td>{{ winner_info.winner_name }}</td>
-                <td>{{ winner_info.winner_username }}</td>
+                <td>{{ winner_name }}</td>
+                <td>{{ winner_username }}</td>
             </tr>
             {% endfor %}
         </tbody>
