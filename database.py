@@ -13,13 +13,13 @@ class Users(db.Model):
 
 class Student(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
-    roll_number= db.Column(db.String(100),primary_key=True)
+    roll_number= db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100),nullable= False)
     department= db.Column(db.String(100),nullable=False)
 
 class Participant(db.Model):
     user_name  = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
-    participant_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    # participant_id = db.Column(db.Integer, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     college_name = db.Column(db.String(255), db.ForeignKey('college.name', ondelete='CASCADE'))
     food_id = db.Column(db.Integer, db.ForeignKey('food.food_id', ondelete='SET NULL'), nullable=True)
@@ -27,7 +27,7 @@ class Participant(db.Model):
 
 class Organizer(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
-    organizer_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    # organizer_id = db.Column(db.Integer, autoincrement=True, nullable=False, unique=True)
     name = db.Column(db.String(100),nullable= False)
     
 class Event(db.Model):
@@ -35,7 +35,7 @@ class Event(db.Model):
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
-    organizer_username = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), nullable=False)
+    organizer_username = db.Column(db.String(100), db.ForeignKey('organizer.user_name', ondelete='CASCADE'), nullable=False)
     winner_username = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='SET NULL'), nullable=True)
 
 class College(db.Model):
@@ -48,7 +48,7 @@ class EventParticipant(db.Model):
 
 class EventVolunteer(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), primary_key=True)
-    volunteer_id = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
+    volunteer_id = db.Column(db.String(100), db.ForeignKey('student.user_name', ondelete='CASCADE'), primary_key=True)
 
 class Food(db.Model):
     food_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -64,6 +64,11 @@ class Notifications(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     notification_text = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
+
+class OrganizersAllowed(db.Model):
+    user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    allowed = db.Column(db.Boolean, nullable=False, default=False)
 
 # Define the SQL command for the trigger function
 create_func_winner_update = """
@@ -86,6 +91,28 @@ WHEN (OLD.winner_username IS DISTINCT FROM NEW.winner_username)
 EXECUTE FUNCTION winner_updated_func();
 """
 
+create_func_insert_into_organizer = """
+CREATE OR REPLACE FUNCTION insert_into_organizer()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    IF NEW.allowed = TRUE THEN
+        INSERT INTO Organizer (user_name, name)
+        VALUES (NEW.user_name, NEW.name);
+    END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+"""
+
+create_trigger_insert_into_organizer = """
+CREATE TRIGGER insert_into_organizer_trigger
+AFTER UPDATE OF allowed ON organizers_allowed
+FOR EACH ROW
+EXECUTE FUNCTION insert_into_organizer();
+"""
+
 def create_triggers_on_connect(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
 
@@ -101,6 +128,20 @@ def create_triggers_on_connect(dbapi_connection, connection_record):
     trigger_exists = cursor.fetchone() is not None 
     if not trigger_exists:
         cursor.execute(create_trigger_winner_update)
+        dbapi_connection.commit()
+
+    #check if function already exist
+    cursor.execute("SELECT proname FROM pg_proc WHERE proname = 'insert_into_organizer'")
+    func_exists = cursor.fetchone() is not None
+    if not func_exists:
+        cursor.execute(create_func_insert_into_organizer)
+        dbapi_connection.commit()
+    
+    # Check if trigger already exist
+    cursor.execute("SELECT * FROM pg_trigger WHERE tgname = 'insert_into_organizer_trigger'")
+    trigger_exists = cursor.fetchone() is not None 
+    if not trigger_exists:
+        cursor.execute(create_trigger_insert_into_organizer)
         dbapi_connection.commit()
     
     cursor.close()
@@ -143,7 +184,7 @@ def create_user_organizer(username, password, organizer_name):
     user = Users(username=username, password=password, user_type = 'Organizer')
     db.session.add(user)
     db.session.commit()
-    organizer = Organizer(user_name=username, name=organizer_name)
+    organizer = OrganizersAllowed(user_name=username, name=organizer_name, allowed=False)
     db.session.add(organizer)
     db.session.commit()
 
@@ -275,3 +316,37 @@ def get_events_and_winners(username):
         filter(EventParticipant.participant_id == username).all()
     
     return events_with_winners
+
+def is_organizer_allowed(username):
+    # Query the OrganizersAllowed table to check if the organizer is allowed
+    organizer = OrganizersAllowed.query.filter_by(user_name=username).first()
+    if organizer:
+        return organizer.allowed
+    else:
+        # If the organizer is not found, return False
+        return False
+    
+def get_organizers_to_allow():
+    return OrganizersAllowed.query.filter_by(allowed=False).all()
+
+def update_organizers_allowed_status(organizers_to_allow):
+    for username in organizers_to_allow:
+        organizer = OrganizersAllowed.query.filter_by(user_name=username).first()
+        if organizer:
+            organizer.allowed = True
+            db.session.commit()
+
+def get_users_to_delete():
+    users_list = db.session.query(Users.username, Users.user_type, func.coalesce(Student.name, Participant.name, Organizer.name)).\
+        outerjoin(Student, Student.user_name == Users.username).\
+        outerjoin(Participant, Participant.user_name == Users.username).\
+        outerjoin(Organizer, Organizer.user_name == Users.username).\
+        filter(Users.user_type != 'Admin').all()
+    return users_list
+
+def delete_users(users_to_delete):
+    for username in users_to_delete:
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            db.session.delete(user)
+            db.session.commit()

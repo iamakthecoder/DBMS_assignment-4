@@ -9,13 +9,17 @@
 
 <h2>Organizer Dashboard</h2>
 
-<form action="/organizer_view_events" method="get">
-  <button type="submit">View Events</button>
-</form>
+{% if allowed %}
+  <form action="/organizer_view_events" method="get">
+    <button type="submit">View Events</button>
+  </form>
 
-<form action="/create_event" method="get">
-  <button type="submit">Create New Event</button>
-</form>
+  <form action="/create_event" method="get">
+    <button type="submit">Create New Event</button>
+  </form>
+{% else %}
+  <p>You have not been granted permission by the admin yet. Please wait...</p>
+{% endif %}
 
 </body>
 </html>

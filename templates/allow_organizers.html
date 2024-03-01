@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Allow Organizers</title>
+</head>
+<body>
+
+<h2>Allow Organizers</h2>
+
+<form action="/update_organizers" method="post">
+  {% for organizer in organizers %}
+  <div>
+    <input type="checkbox" id="{{ organizer.user_name }}" name="organizers[]" value="{{ organizer.user_name }}">
+    <label for="{{ organizer.user_name }}">{{ organizer.name }} ({{ organizer.user_name }})</label>
+  </div>
+  {% endfor %}
+  <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>

@@ -119,8 +119,21 @@ def Organizer_dashboard():
         return redirect(url_for('index'))
     if session['user_type']!='Organizer':
         return redirect(url_for('index'))
+    
+    username = session['username']
+    
+    organizer_allowed = is_organizer_allowed(username)
 
-    return render_template('organizer_dashboard.html')
+    return render_template('organizer_dashboard.html', allowed = organizer_allowed)
+
+@app.route('/Admin_dashboard')
+def Admin_dashboard():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    
+    return render_template('admin_dashboard.html')
 
 @app.route('/organizer_view_events')
 def organizer_view_events():
@@ -130,6 +143,9 @@ def organizer_view_events():
         return redirect(url_for('index'))
     
     org_username = session['username']
+    org_allowed = is_organizer_allowed(org_username)
+    if not org_allowed:
+        return redirect(url_for('Organizer_dashboard'))
 
     events = get_all_events(org_username)
     return render_template('organizer_view_events.html', events=events)
@@ -140,6 +156,11 @@ def create_event():
         return redirect(url_for('index'))
     if session['user_type']!='Organizer':
         return redirect(url_for('index'))
+    
+    org_username = session['username']
+    org_allowed = is_organizer_allowed(org_username)
+    if not org_allowed:
+        return redirect(url_for('Organizer_dashboard'))
     
     if request.method == 'POST':
         name = request.form['name']
@@ -160,6 +181,11 @@ def event_details(event_id):
     if session['user_type']!='Organizer':
         return redirect(url_for('index'))
     
+    org_username = session['username']
+    org_allowed = is_organizer_allowed(org_username)
+    if not org_allowed:
+        return redirect(url_for('Organizer_dashboard'))
+    
     event = get_event_details(event_id)
     volunteers = get_event_volunteers(event_id)
     participants = get_participants_for_event(event_id)
@@ -172,6 +198,11 @@ def submit_winner(event_id):
         return redirect(url_for('index'))
     if session['user_type']!='Organizer':
         return redirect(url_for('index'))
+    
+    org_username = session['username']
+    org_allowed = is_organizer_allowed(org_username)
+    if not org_allowed:
+        return redirect(url_for('Organizer_dashboard'))
     
     if request.method=='POST':
         winner_username = request.form['winner']
@@ -278,6 +309,44 @@ def student_see_winners():
     events_and_winners = get_events_and_winners(username)
 
     return render_template('seeWinner.html', events_with_winners=events_and_winners)
+
+@app.route('/allow_organizers')
+def allow_organizers():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    
+    organizers = get_organizers_to_allow()
+    return render_template('allow_organizers.html', organizers=organizers)
+
+@app.route('/update_organizers', methods=['POST'])
+def update_organizers():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        organizers_to_allow = request.form.getlist('organizers[]')
+        update_organizers_allowed_status(organizers_to_allow)
+        return redirect(url_for('Admin_dashboard'))
+    return redirect(url_for('allow_organizers'))
+
+@app.route('/delete_users', methods=['GET', 'POST'])
+def delete_users_page():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    
+    elif request.method == 'POST':
+        users_to_delete = request.form.getlist('users[]')
+        delete_users(users_to_delete)
+        return redirect(url_for('Admin_dashboard'))
+    
+    users = get_users_to_delete()
+    return render_template('delete_users.html', users=users)
 
 @app.route('/logout')
 def logout():
