@@ -87,7 +87,7 @@ def login():
         password = request.form['password']
         user = get_user(username)
         # Check if username and password are correct
-        if user and user.password == password:
+        if user and user.check_password(password):
             session['username'] = username
             session['user_type'] = user.user_type
             return redirect(url_for(f"{user.user_type}_dashboard"))
@@ -359,4 +359,6 @@ if __name__=="__main__":
     with app.app_context():
         with db.engine.connect() as connection:
             create_triggers_on_connect(connection.connection, None)
+    with app.app_context():
+        default_initialization()
     app.run(debug=True)
