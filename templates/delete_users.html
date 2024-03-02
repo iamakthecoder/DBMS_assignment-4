@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delete Users</title>
+</head>
+<body>
+
+<h2>Delete Users</h2>
+
+<form action="/delete_users" method="post">
+  {% for username, user_type, name in users %}
+  <div>
+    <input type="checkbox" id="{{ username }}" name="users[]" value="{{ username }}">
+    <label for="{{ username }}">{{ username }} ({{ user_type }} : {{ name }})</label>
+  </div>
+  {% endfor %}
+  <button type="submit">Delete Selected Users</button>
+</form>
+
+</body>
+</html>

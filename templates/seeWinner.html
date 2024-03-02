@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>See Winners</title>
+</head>
+<body>
+    <h1>Event Winners</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Current Winner</th>
+                <th>Winner's Username</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event_name, winner_username, winner_name in events_with_winners %}
+            <tr>
+                <td>{{ event_name }}</td>
+                <td>{{ winner_name }}</td>
+                <td>{{ winner_username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

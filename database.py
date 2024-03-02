@@ -1,25 +1,31 @@
-# database.py
-
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import null
 from sqlalchemy import func
+import bcrypt
 
 db = SQLAlchemy()
 
 class Users(db.Model):
     username = db.Column(db.String(100), primary_key=True)
-    password = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     user_type = db.Column(db.String(100), nullable=False)
+
+    def set_password(self, pswd):
+        hashed_password = bcrypt.hashpw(pswd.encode('utf-8'), bcrypt.gensalt())
+        self.password = hashed_password.decode('utf-8')
+
+    def check_password(self, pswd):
+        return bcrypt.checkpw(pswd.encode('utf-8'), self.password.encode('utf-8'))
 
 class Student(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
-    roll_number= db.Column(db.String(100),primary_key=True)
+    roll_number= db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100),nullable= False)
     department= db.Column(db.String(100),nullable=False)
 
 class Participant(db.Model):
     user_name  = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
-    participant_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    # participant_id = db.Column(db.Integer, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     college_name = db.Column(db.String(255), db.ForeignKey('college.name', ondelete='CASCADE'))
     food_id = db.Column(db.Integer, db.ForeignKey('food.food_id', ondelete='SET NULL'), nullable=True)
@@ -27,7 +33,7 @@ class Participant(db.Model):
 
 class Organizer(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
-    organizer_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    # organizer_id = db.Column(db.Integer, autoincrement=True, nullable=False, unique=True)
     name = db.Column(db.String(100),nullable= False)
     
 class Event(db.Model):
@@ -35,7 +41,7 @@ class Event(db.Model):
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
-    organizer_username = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), nullable=False)
+    organizer_username = db.Column(db.String(100), db.ForeignKey('organizer.user_name', ondelete='CASCADE'), nullable=False)
     winner_username = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='SET NULL'), nullable=True)
 
 class College(db.Model):
@@ -48,7 +54,7 @@ class EventParticipant(db.Model):
 
 class EventVolunteer(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), primary_key=True)
-    volunteer_id = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
+    volunteer_id = db.Column(db.String(100), db.ForeignKey('student.user_name', ondelete='CASCADE'), primary_key=True)
 
 class Food(db.Model):
     food_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -65,13 +71,18 @@ class Notifications(db.Model):
     notification_text = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
 
+class OrganizersAllowed(db.Model):
+    user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    allowed = db.Column(db.Boolean, nullable=False, default=False)
+
 # Define the SQL command for the trigger function
 create_func_winner_update = """
 CREATE OR REPLACE FUNCTION winner_updated_func()
 RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO notifications (notification_text, timestamp)
-    VALUES ('Winner is updated for the ' || (SELECT name FROM event WHERE id = NEW.id), CURRENT_TIMESTAMP);
+    VALUES ('Winner is updated for the event ' || (SELECT name FROM event WHERE id = NEW.id), CURRENT_TIMESTAMP);
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -84,6 +95,48 @@ AFTER UPDATE OF winner_username ON event
 FOR EACH ROW
 WHEN (OLD.winner_username IS DISTINCT FROM NEW.winner_username)
 EXECUTE FUNCTION winner_updated_func();
+"""
+
+create_func_insert_into_organizer = """
+CREATE OR REPLACE FUNCTION insert_into_organizer()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    IF NEW.allowed = TRUE THEN
+        INSERT INTO Organizer (user_name, name)
+        VALUES (NEW.user_name, NEW.name);
+    END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+"""
+
+create_trigger_insert_into_organizer = """
+CREATE TRIGGER insert_into_organizer_trigger
+AFTER UPDATE OF allowed ON organizers_allowed
+FOR EACH ROW
+EXECUTE FUNCTION insert_into_organizer();
+"""
+
+create_func_create_event_notification = """
+CREATE OR REPLACE FUNCTION create_event_notification()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    INSERT INTO Notifications (notification_text, timestamp)
+    VALUES (CONCAT('New event "', NEW.name, '" has been created and is now available.'), CURRENT_TIMESTAMP);
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+"""
+
+create_trigger_event_insert_notification = """
+CREATE TRIGGER event_insert_notification_trigger
+AFTER INSERT ON Event
+FOR EACH ROW
+EXECUTE FUNCTION create_event_notification();
 """
 
 def create_triggers_on_connect(dbapi_connection, connection_record):
@@ -102,6 +155,34 @@ def create_triggers_on_connect(dbapi_connection, connection_record):
     if not trigger_exists:
         cursor.execute(create_trigger_winner_update)
         dbapi_connection.commit()
+
+    #check if function already exist
+    cursor.execute("SELECT proname FROM pg_proc WHERE proname = 'insert_into_organizer'")
+    func_exists = cursor.fetchone() is not None
+    if not func_exists:
+        cursor.execute(create_func_insert_into_organizer)
+        dbapi_connection.commit()
+    
+    # Check if trigger already exist
+    cursor.execute("SELECT * FROM pg_trigger WHERE tgname = 'insert_into_organizer_trigger'")
+    trigger_exists = cursor.fetchone() is not None 
+    if not trigger_exists:
+        cursor.execute(create_trigger_insert_into_organizer)
+        dbapi_connection.commit()
+
+    #check if function already exist
+    cursor.execute("SELECT proname FROM pg_proc WHERE proname = 'create_event_notification'")
+    func_exists = cursor.fetchone() is not None
+    if not func_exists:
+        cursor.execute(create_func_create_event_notification)
+        dbapi_connection.commit()
+    
+    # Check if trigger already exist
+    cursor.execute("SELECT * FROM pg_trigger WHERE tgname = 'event_insert_notification_trigger'")
+    trigger_exists = cursor.fetchone() is not None 
+    if not trigger_exists:
+        cursor.execute(create_trigger_event_insert_notification)
+        dbapi_connection.commit()
     
     cursor.close()
 
@@ -112,7 +193,8 @@ def get_user(username):
     return Users.query.filter_by(username=username).first()
 
 def create_user_student(username, password, roll_no, stud_name, dept):
-    user = Users(username=username, password=password, user_type='Student')
+    user = Users(username=username, user_type='Student')
+    user.set_password(password)
     db.session.add(user)
     db.session.commit()
     stud = Student(user_name = username, roll_number=roll_no, name=stud_name, department = dept)
@@ -120,7 +202,8 @@ def create_user_student(username, password, roll_no, stud_name, dept):
     db.session.commit()
 
 def create_user_participant(username, password, participant_name, college, food_id, accommodation_id):
-    user = Users(username=username, password=password, user_type='Participant')
+    user = Users(username=username, user_type='Participant')
+    user.set_password(password)
     db.session.add(user)
     db.session.commit()
     participant = Participant(
@@ -140,10 +223,11 @@ def create_user_participant(username, password, participant_name, college, food_
     db.session.commit()
 
 def create_user_organizer(username, password, organizer_name):
-    user = Users(username=username, password=password, user_type = 'Organizer')
+    user = Users(username=username, user_type = 'Organizer')
+    user.set_password(password)
     db.session.add(user)
     db.session.commit()
-    organizer = Organizer(user_name=username, name=organizer_name)
+    organizer = OrganizersAllowed(user_name=username, name=organizer_name, allowed=False)
     db.session.add(organizer)
     db.session.commit()
 
@@ -264,3 +348,87 @@ def get_all_notifications():
     # Query all notifications and order them by timestamp in descending order
     notifications = Notifications.query.order_by(Notifications.timestamp.desc()).all()
     return notifications
+
+def get_events_and_winners(username):
+    # Query events and winners for the given participant username
+    
+    events_with_winners = db.session.query(Event.name, Event.winner_username, func.coalesce(Student.name, Participant.name)).\
+        join(EventParticipant, Event.id == EventParticipant.event_id).\
+        outerjoin(Student, Student.user_name == Event.winner_username).\
+        outerjoin(Participant, Participant.user_name == Event.winner_username).\
+        filter(EventParticipant.participant_id == username).all()
+    
+    return events_with_winners
+
+def is_organizer_allowed(username):
+    # Query the OrganizersAllowed table to check if the organizer is allowed
+    organizer = OrganizersAllowed.query.filter_by(user_name=username).first()
+    if organizer:
+        return organizer.allowed
+    else:
+        # If the organizer is not found, return False
+        return False
+    
+def get_organizers_to_allow():
+    return OrganizersAllowed.query.filter_by(allowed=False).all()
+
+def update_organizers_allowed_status(organizers_to_allow):
+    for username in organizers_to_allow:
+        organizer = OrganizersAllowed.query.filter_by(user_name=username).first()
+        if organizer:
+            organizer.allowed = True
+            db.session.commit()
+
+def get_users_to_delete():
+    users_list = db.session.query(Users.username, Users.user_type, func.coalesce(Student.name, Participant.name, Organizer.name)).\
+        outerjoin(Student, Student.user_name == Users.username).\
+        outerjoin(Participant, Participant.user_name == Users.username).\
+        outerjoin(Organizer, Organizer.user_name == Users.username).\
+        filter(Users.user_type != 'Admin').all()
+    return users_list
+
+def delete_users(users_to_delete):
+    for username in users_to_delete:
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+
+def default_initialization():
+    # Check if there is an admin user
+    admin_user = Users.query.filter_by(username='admin').first()
+    if not admin_user:
+        admin_user = Users(username='admin', user_type='Admin')
+        admin_user.set_password('123')
+        db.session.add(admin_user)
+
+    # Check if there are any entries in the Food table
+    if not Food.query.first():
+        vegetarian_food = Food(food_desc='Vegetarian', price=70)
+        non_vegetarian_food = Food(food_desc='Non-vegetarian', price=100)
+        db.session.add(vegetarian_food)
+        db.session.add(non_vegetarian_food)
+
+    # Check if there are any entries in the Accommodation table
+    if not Accommodation.query.first():
+        tgh_accommodation = Accommodation(name='TGH', price_per_day=1000)
+        vgh_accommodation = Accommodation(name='VGH', price_per_day=800)
+        db.session.add(tgh_accommodation)
+        db.session.add(vgh_accommodation)
+
+    #entries for colleges
+    college_data = [
+        ('IITB', 'Mumbai'),
+        ('IITD', 'Delhi'),
+        ('IITM', 'Chennai'),
+        ('NITW', 'Warangal'),
+        ('BITS', 'Pilani')
+    ]
+    
+    for name, location in college_data:
+        college = College.query.filter_by(name=name).first()
+        if not college:
+            college = College(name=name, location=location)
+            db.session.add(college)
+
+    db.session.commit()
