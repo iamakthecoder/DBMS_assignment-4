@@ -28,11 +28,15 @@
     <label for="date">Event Date</label>
     <input type="date" id="date" name="date" class="input" required>
 
-    <label for="date">Event Venue</label>
-    <input type="date" id="date" name="venue" class="input" required>
+    <label for="venue">Event Venue</label>
+    <select id="venue" name="venue" class="input" >
+      {% for venue in venues %}
+      <option value="{{ venue.id }}">{{ venue.name }} - {{ venue.capacity }}</option>
+      {% endfor %}
+    </select>
 
-    <label for="date">Prize Amount</label>
-    <input type="nit" id="date" name="prize" class="input" required>
+    <label for="prize">Prize Amount</label>
+    <input type="number" id="prize" name="prize" class="input" required>
 
     <input type="submit" value="Create Event" class="submit">
   </form>

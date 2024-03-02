@@ -167,11 +167,16 @@ def create_event():
         type = request.form['type']
         date = request.form['date']
         organizer_username = session['username']  # Assuming username is stored in session
+        venueid=request.form['venue']
+        prize=request.form['prize']
 
-        create_new_event(name, type, date, organizer_username)
+
+        create_new_event(name, type, date, organizer_username,venueid,prize)
         return redirect(url_for('Organizer_dashboard'))
+    
+    venues=get_venue()
         
-    return render_template('create_event.html')
+    return render_template('create_event.html',venues=venues)
     
 
 @app.route('/event/<int:event_id>/details')
@@ -187,10 +192,11 @@ def event_details(event_id):
         return redirect(url_for('Organizer_dashboard'))
     
     event = get_event_details(event_id)
+    venue = get_venue_from_id(event.venueid)
     volunteers = get_event_volunteers(event_id)
     participants = get_participants_for_event(event_id)
     winner_name = get_name_by_username(event.winner_username)
-    return render_template('event_details.html', event=event, winner_name=winner_name, volunteers=volunteers, participants=participants)
+    return render_template('event_details.html', event=event, winner_name=winner_name, volunteers=volunteers, participants=participants, venue=venue)
 
 @app.route('/submit_winner/<int:event_id>', methods=['GET', 'POST'])
 def submit_winner(event_id):
