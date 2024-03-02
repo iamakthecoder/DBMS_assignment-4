@@ -25,7 +25,7 @@ body{
     font-size: 25px;
     color:#fffefe;
     background-image: url('./images/IMG_5262.JPG');
-    /* background-size ; */
+    background-size:cover ;
     background-repeat: no-repeat;
 }
 .submit{

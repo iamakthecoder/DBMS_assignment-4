@@ -4,7 +4,7 @@ body {
     font-size: 25px;
     color:#f6f5f5;
     background-image: url('./images/IMG_5262.JPG');
-    /* background-size :cover; */
+    background-size :cover;
     background-repeat: no-repeat;
 }
 .signup{

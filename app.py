@@ -348,6 +348,15 @@ def delete_users_page():
     users = get_users_to_delete()
     return render_template('delete_users.html', users=users)
 
+@app.route('/dashboard')
+def dashboard():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    
+    user_type = session['user_type']
+
+    return redirect(url_for(f"{user_type}_dashboard"))
+
 @app.route('/logout')
 def logout():
     return redirect(url_for('index'))

@@ -380,10 +380,11 @@ def update_organizers_allowed_status(organizers_to_allow):
             db.session.commit()
 
 def get_users_to_delete():
-    users_list = db.session.query(Users.username, Users.user_type, func.coalesce(Student.name, Participant.name, Organizer.name)).\
+    users_list = db.session.query(Users.username, Users.user_type, func.coalesce(Student.name, Participant.name, Organizer.name, OrganizersAllowed.name)).\
         outerjoin(Student, Student.user_name == Users.username).\
         outerjoin(Participant, Participant.user_name == Users.username).\
         outerjoin(Organizer, Organizer.user_name == Users.username).\
+        outerjoin(OrganizersAllowed, OrganizersAllowed.user_name == Users.username).\
         filter(Users.user_type != 'Admin').all()
     return users_list
 
