@@ -31,7 +31,9 @@
     <div class="signup">
         <h1>Organizer Signup</h1>
         <form action="/organizer_signup" method="POST" class="form" onsubmit="return validateForm();">
-            
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
             <label for="name">Name</label>
             <input type="text" id="name" name="name" class="input" required>
 

@@ -97,3 +97,9 @@ nav >a{
     border-radius:10px;
     padding:5px 15px;
 }
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+}

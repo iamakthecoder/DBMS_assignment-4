@@ -33,6 +33,9 @@
   <h2 class="heading">Participant Signup</h2>
 
   <form action="/participant_signup" method="post" class="form" onsubmit="return validateForm();">
+    {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
     <label for="name">Name:</label>
     <input type="text" id="name" name="name"  class="input" required>
 

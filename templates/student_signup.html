@@ -31,6 +31,9 @@
     <div class="signup">
         <h1>Student Signup</h1>
         <form action="/student_signup" method="POST" class="form" onsubmit="return validateForm();">
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
             <label for="roll_number">Roll Number:</label>
             <input type="text" id="roll_number" name="roll_number" class="input" required>
 
