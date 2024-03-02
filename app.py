@@ -183,7 +183,7 @@ def create_event():
 def event_details(event_id):
     if 'username' not in session:
         return redirect(url_for('index'))
-    if session['user_type']!='Organizer':
+    if session['user_type']!='Organizer' and session['user_type']!='Admin':
         return redirect(url_for('index'))
     
     org_username = session['username']
