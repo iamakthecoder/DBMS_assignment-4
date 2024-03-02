@@ -353,6 +353,49 @@ def logout():
     return redirect(url_for('index'))
 
 
+# Add this route to your Flask app
+@app.route('/view_participants')
+def view_participants():
+    # Add logic to fetch participants from the database
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+
+    participants = get_all_participants()  # You need to implement this function
+    return render_template('view_participants.html', participants_info=participants)
+
+@app.route('/view_organizers')
+def view_organizers():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    organizers = get_organizers()
+    return render_template('view_organizers.html', organizers=organizers)
+@app.route('/view_students')
+def view_students():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    students= get_students()
+    return render_template('view_students.html', students=students)
+
+
+
+
+@app.route('/student_details/<username>')
+def student_details(username):
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    student = get_student_details(username)
+    if student:
+        return render_template('student_details.html', student=student)
+
+
 if __name__=="__main__":
     with app.app_context():
         db.create_all()
