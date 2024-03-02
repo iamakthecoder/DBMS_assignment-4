@@ -4,20 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Delete Users</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='alloworganizer.css') }}">
 </head>
 <body>
+  <nav className="Navbar">
+    <h1 ></h1>
+    <a href="/dashboard" class="notification">Dashboard</a>
+    <a href="/notifications" class="notification">Notifications</a>
 
-<h2>Delete Users</h2>
+    <a href="/logout" class="logout">Logout</a>
+      <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+    </nav>
 
-<form action="/delete_users" method="post">
-  {% for username, user_type, name in users %}
-  <div>
-    <input type="checkbox" id="{{ username }}" name="users[]" value="{{ username }}">
-    <label for="{{ username }}">{{ username }} ({{ user_type }} : {{ name }})</label>
-  </div>
-  {% endfor %}
-  <button type="submit">Delete Selected Users</button>
-</form>
+    <h1 class="heading">Delete Users</h1>
+
+
+    <form action="/delete_users" method="post" >
+    <div class="table">
+        <table border="1">
+            <tr>
+                <th>User Type</th>
+                <th>User Name</th>
+                <th>Name</th>
+                <th>Delete User</th>
+            </tr>
+              {% for username, user_type, name in users %}
+              <tr>
+                  <td>{{ user_type }}</td>
+                  <td>{{ username }}</td>
+                  <td>{{ name }}</td>
+                  <td><input type="checkbox" id="{{ username }}" name="users[]" value="{{ username }}" class="input"></td>
+              </tr>
+              {% endfor %}
+            
+        </table>
+    </div>
+
+    <button type="submit" class="submit1">Delete Selected Users</button>
+    </form>
+    
 
 </body>
 </html>

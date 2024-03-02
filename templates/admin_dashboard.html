@@ -4,18 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='studentdashboard.css') }}">
 </head>
 <body>
+  <nav className="Navbar">
+    <h1 ></h1>
+    <a href="/notifications" class="notification">Notifications</a>
 
-<h2>Admin Dashboard</h2>
+<a href="/logout" class="logout">Logout</a>
+    <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+</nav>
+  <h2 class="welcome">Admin Dashboard</h2>
+  <div class="signup">
+    <form action="/allow_organizers" method="get">
+      <button type="submit" class="btn">Pending requests from Organizers</button>
+    </form>
 
-<form action="/allow_organizers" method="get">
-  <button type="submit">Pending requests from Organizers</button>
-</form>
-
-<form action="/delete_users" method="get">
-  <button type="submit">Delete Users</button>
-</form>
+    <form action="/delete_users" method="get">
+      <button type="submit" class="btn">Delete Users</button>
+    </form>
+  </div>
+  
 
 </body>
 </html>

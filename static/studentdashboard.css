@@ -8,7 +8,7 @@ body {
     background-repeat: no-repeat;
 }
 .welcome{
-    /* padding:10vh; */
+    font-size:45px;
     padding: bottom 20vh;
 }
 .btn {
@@ -25,7 +25,24 @@ body {
     background-color:rgb(246, 243, 243);
     color: #333;
 }
+.btn1 {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 22px;
+    font-weight:900;
+    cursor: pointer;
+    width: 400px;
+    text-decoration: none;
+    border: 2px  #333;
+    border-radius: 10px;
+    background-color:rgb(246, 243, 243);
+    color: #333;
+}
 .btn:hover {
+    background-color: #ccc;
+}
+.btn1:hover {
     background-color: #ccc;
 }
 nav {

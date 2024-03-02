@@ -3,7 +3,7 @@ from database import *
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'  # Change this to a secure secret key
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://21CS10008:21CS10008@10.5.18.68/21CS10008'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://21CS30033:21CS30033@10.5.18.70/21CS30033'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sujitkumar@localhost/postgres'
 db.init_app(app)
 

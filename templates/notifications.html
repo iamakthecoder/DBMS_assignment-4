@@ -4,24 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='alloworganizer.css') }}">
 </head>
 <body>
-    <h1>Notifications</h1>
-    <table>
-        <thead>
+    <nav className="Navbar">
+        <h1></h1>
+        <a href="/dashboard" class="notification">Dashboard</a>
+        <a href="/logout" class="logout">Logout</a>
+        </nav>
+
+    <h1 class="heading">Notifications</h1>
+    <div class="table">
+        <table border="1">
             <tr>
                 <th>Notification Text</th>
                 <th>Timestamp</th>
             </tr>
-        </thead>
-        <tbody>
             {% for notification in notifications %}
             <tr>
                 <td>{{ notification.notification_text }}</td>
                 <td>{{ notification.timestamp }}</td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
+            
+        </table>
+    </div>
+
 </body>
 </html>
