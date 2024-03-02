@@ -27,9 +27,11 @@ def student_signup():
         roll_no = request.form['roll_number']
         name = request.form['name']
         dept = request.form['department']
+        phone = request.form['phone']
+        email = request.form['email']
         # Check if username already exists
         if not is_user_exists(username):
-            create_user_student(username, password, roll_no, name, dept)
+            create_user_student(username, password, roll_no, name, dept, phone, email)
             return redirect(url_for('index'))
         else:
             error="Username already exists"
@@ -45,12 +47,14 @@ def participant_signup():
         password = request.form['password']
         name = request.form['name']
         college = request.form['college_name']
+        phone = request.form['phone']
+        email = request.form['email']
         food_id = request.form.get('food', None)
         accommodation_id = request.form.get('accommodation', None)
         
         # Check if username already exists
         if not is_user_exists(username):
-            create_user_participant(username, password, name, college, food_id, accommodation_id)
+            create_user_participant(username, password, name, college, phone, email, food_id, accommodation_id)
             return redirect(url_for('index'))
         else:
             error = "Username already exists"
@@ -69,9 +73,11 @@ def organizer_signup():
         username = request.form['username']
         password = request.form['password']
         name = request.form['name']
+        phone = request.form['phone']
+        email = request.form['email']
         # Check if username already exists
         if not is_user_exists(username):
-            create_user_organizer(username, password, name)
+            create_user_organizer(username, password, name, phone, email)
             return redirect(url_for('index'))
         else:
             error = "Username already exists"

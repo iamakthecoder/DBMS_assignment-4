@@ -86,9 +86,10 @@ nav >a{
     font-size:20px;
     border-radius:5px;
     border:1px solid gray;
+    opacity:0.8
   }
   .submit1{
-    background-color:rgb(227, 223, 227);
+    background-color:rgb(255, 255, 255);
     margin:5px;
     padding:5px;
     padding-left:10px;
@@ -99,6 +100,7 @@ nav >a{
     border-radius:5px;
     font-size:20px;
     border:1px solid gray;
+    opacity:0.8
   }
   .signup{
     height:90vh;
@@ -144,6 +146,14 @@ nav >a{
 }
 .table{
     width:80%;
+    margin:0 auto;
+    /* background-color: #ddd; */
+    border-radius: 0px;
+    background-color: rgba(255, 255, 255, 0.8); /* Adjust the RGBA values and opacity as needed */
+    padding: 0px; 
+}
+.table1{
+    width:60%;
     margin:0 auto;
     /* background-color: #ddd; */
     border-radius: 0px;

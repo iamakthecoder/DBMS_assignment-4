@@ -5,24 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organizer Signup</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='signup.css') }}">
+    <script>
+        function validateForm() {
+            var phoneRegex = /^\d{10}$/; // Regular expression for 10-digit phone number
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression for email address format
+
+            var phone = document.getElementById("phone").value;
+            var email = document.getElementById("email").value;
+
+            if (!phone.match(phoneRegex)) {
+                alert("Please enter a valid 10-digit phone number.");
+                return false;
+            }
+
+            if (!email.match(emailRegex)) {
+                alert("Please enter a valid email address.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </head>
 <body>
     <div class="signup">
         <h1>Organizer Signup</h1>
-        <form action="/organizer_signup" method="POST" class="form">
+        <form action="/organizer_signup" method="POST" class="form" onsubmit="return validateForm();">
             
             <label for="name">Name</label>
-            <input type="text" id="name" name="name"  class="input" required>
+            <input type="text" id="name" name="name" class="input" required>
 
             <label for="username">Username</label>
-            <input type="text" id="username" name="username"  class="input" required>
+            <input type="text" id="username" name="username" class="input" required>
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" class="input" required>
 
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" name="phone" class="input" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="input" required>
+
             <input type="submit" value="SignUp" class="submit">
         </form>
     </div>
-    
 </body>
 </html>

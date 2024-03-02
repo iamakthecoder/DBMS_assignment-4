@@ -4,78 +4,90 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Details</title>
-<style>
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    th, td {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-    }
-
-    th {
-        background-color: #f2f2f2;
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='alloworganizer.css') }}">
 </head>
 <body>
-    <h2>Student Details</h2>
-    <table>
-        <tr>
-            <th>Attribute</th>
-            <th>Value</th>
-        </tr>
-        <tr>
-            <td>Name</td>
-            <td>{{ student.name }}</td>
-        </tr>
-        <tr>
-            <td>Username</td>
-            <td>{{ student.username }}</td>
-        </tr>
-        <tr>
-            <td>Roll Number</td>
-            <td>{{ student.roll_number }}</td>
-        </tr>
-        <tr>
-            <td>Department</td>
-            <td>{{ student.department }}</td>
-        </tr>
-    </table>
+    <nav className="Navbar">
+        <h1></h1>
+        <a href="/dashboard" class="notification">Dashboard</a>
+        <a href="/notifications" class="notification">Notifications</a>
+        <a href="/logout" class="logout">Logout</a>
+    </nav>
+    <h1 class="welcome">Student Details</h1>
+    <div class="table1">
+        <table>
+            <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>{{ student.name }}</td>
+            </tr>
+            <tr>
+                <td>Username</td>
+                <td>{{ student.username }}</td>
+            </tr>
+            <tr>
+                <td>Roll Number</td>
+                <td>{{ student.roll_number }}</td>
+            </tr>
+            <tr>
+                <td>Department</td>
+                <td>{{ student.department }}</td>
+            </tr>
+            <tr>
+                <td>Phone Number</td>
+                <td>{{ student.phone }}</td>
+            </tr>
+            <tr>
+                <td>Email ID</td>
+                <td>{{ student.email }}</td>
+            </tr>
+        </table>
+    </div>
+    <h1 class="welcome">Events Participated</h1>
+    <div class="table">
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Event Details</th>
+            </tr>
+            {% for event in student.events_participated %}
+            <tr>
+                <td>{{ event.name }}</td>
+                <td>{{ event.type }}</td>
+                <td>{{ event.date }}</td>
+                <td><a href="/event/{{ event.id }}/details">View Details</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 
-    <h2>Events Participated</h2>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Date</th>
-        </tr>
-        {% for event in student.events_participated %}
-        <tr>
-            <td>{{ event.name }}</td>
-            <td>{{ event.type }}</td>
-            <td>{{ event.date }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <h1 class="welcome">Events Volunteered</h1>
+    <div class="table">
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Details</th>
+            </tr>
+            {% for event in student.events_volunteered %}
+            <tr>
+                <td>{{ event.name }}</td>
+                <td>{{ event.type }}</td>
+                <td>{{ event.date }}</td>
+                <td><a href="/event/{{ event.id }}/details">View Details</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 
-    <h2>Events Volunteered</h2>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Date</th>
-        </tr>
-        {% for event in student.events_volunteered %}
-        <tr>
-            <td>{{ event.name }}</td>
-            <td>{{ event.type }}</td>
-            <td>{{ event.date }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    
+
+    
 </body>
 </html>

@@ -19,9 +19,11 @@ class Users(db.Model):
 
 class Student(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
-    roll_number= db.Column(db.String(100), nullable=False)
-    name = db.Column(db.String(100),nullable= False)
-    department= db.Column(db.String(100),nullable=False)
+    roll_number = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    department = db.Column(db.String(100), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
 
 class Participant(db.Model):
     user_name  = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
@@ -30,28 +32,32 @@ class Participant(db.Model):
     college_name = db.Column(db.String(255), db.ForeignKey('college.name', ondelete='CASCADE'))
     food_id = db.Column(db.Integer, db.ForeignKey('food.food_id', ondelete='SET NULL'), nullable=True)
     accommodation_id = db.Column(db.Integer, db.ForeignKey('accommodation.accommodation_id', ondelete='SET NULL'), nullable=True)
+    phone_number = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
 
 class Organizer(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
     # organizer_id = db.Column(db.Integer, autoincrement=True, nullable=False, unique=True)
     name = db.Column(db.String(100),nullable= False)
+    phone_number = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
+    
 
 class Venue(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     name=db.Column(db.String(255),nullable=False)
-    capacity=db.Column(db.Integer,nullable=False)
+    capacity=db.Column(db.Integer,nullable=True)
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=True)
     date = db.Column(db.Date, nullable=False)
     prize =db.Column(db.Integer,nullable=False)
     venueid =db.Column(db.Integer,db.ForeignKey('venue.id',ondelete='CASCADE'),nullable=False)
     organizer_username = db.Column(db.String(100), db.ForeignKey('organizer.user_name', ondelete='CASCADE'), nullable=False)
     winner_username = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='SET NULL'), nullable=True)
-
-
 
 class College(db.Model):
     name = db.Column(db.String(255), primary_key=True)
@@ -83,6 +89,8 @@ class Notifications(db.Model):
 class OrganizersAllowed(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
     allowed = db.Column(db.Boolean, nullable=False, default=False)
 
 # Define the SQL command for the trigger function
@@ -112,8 +120,8 @@ RETURNS TRIGGER AS
 $$
 BEGIN
     IF NEW.allowed = TRUE THEN
-        INSERT INTO Organizer (user_name, name)
-        VALUES (NEW.user_name, NEW.name);
+        INSERT INTO Organizer (user_name, name, phone_number, email)
+        VALUES (NEW.user_name, NEW.name, NEW.phone_number, NEW.email);
     END IF;
     RETURN NEW;
 END;
@@ -201,16 +209,16 @@ def is_user_exists(username):
 def get_user(username):
     return Users.query.filter_by(username=username).first()
 
-def create_user_student(username, password, roll_no, stud_name, dept):
+def create_user_student(username, password, roll_no, stud_name, dept, phone, email):
     user = Users(username=username, user_type='Student')
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
-    stud = Student(user_name = username, roll_number=roll_no, name=stud_name, department = dept)
+    stud = Student(user_name = username, roll_number=roll_no, name=stud_name, department = dept, phone_number = phone, email=email)
     db.session.add(stud)
     db.session.commit()
 
-def create_user_participant(username, password, participant_name, college, food_id, accommodation_id):
+def create_user_participant(username, password, participant_name, college, phone, email, food_id, accommodation_id):
     user = Users(username=username, user_type='Participant')
     user.set_password(password)
     db.session.add(user)
@@ -218,7 +226,9 @@ def create_user_participant(username, password, participant_name, college, food_
     participant = Participant(
         user_name=username,
         name=participant_name,
-        college_name=college
+        college_name=college,
+        phone_number = phone,
+        email = email
     )
     if (food_id is not None) and (food_id!=""):
         participant.food_id=food_id
@@ -231,12 +241,12 @@ def create_user_participant(username, password, participant_name, college, food_
     db.session.add(participant)
     db.session.commit()
 
-def create_user_organizer(username, password, organizer_name):
+def create_user_organizer(username, password, organizer_name, phone, email):
     user = Users(username=username, user_type = 'Organizer')
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
-    organizer = OrganizersAllowed(user_name=username, name=organizer_name, allowed=False)
+    organizer = OrganizersAllowed(user_name=username, name=organizer_name, phone_number=phone, email=email, allowed=False)
     db.session.add(organizer)
     db.session.commit()
 
@@ -444,6 +454,7 @@ def default_initialization():
             db.session.add(college)
 
     venue_data = [
+        ('Online', None),
         ('Kalidas',400),
         ('TOAT',3000),
         ('MG Ground',10000),
@@ -512,6 +523,8 @@ def get_student_details(username):
             name = student.name
             roll_number = student.roll_number
             department = student.department
+            phone = student.phone_number
+            email = student.email
             events_participated = get_participant_events(username)
             events_volunteered = get_volunteer_events(username)
             
@@ -521,6 +534,8 @@ def get_student_details(username):
                 'username': username,
                 'roll_number': roll_number,
                 'department': department,
+                'phone': phone,
+                'email': email,
                 'events_participated': events_participated,
                 'events_volunteered': events_volunteered
             }
@@ -537,6 +552,8 @@ def get_participant_details(username):
         if user:
             name = participant.name
             college = participant.college_name
+            phone = participant.phone_number
+            email = participant.email
             
             # Fetch events participated by the participant
             events_participated = get_participant_events(username)
@@ -546,6 +563,8 @@ def get_participant_details(username):
                 'username': username,
                 'name': name,
                 'college': college,
+                'phone': phone,
+                'email': email,
                 'events_participated': events_participated
             }
     
@@ -560,6 +579,8 @@ def get_organizer_details(username):
         user = Users.query.filter_by(username=username).first()
         if user:
             name = organizer.name
+            phone = organizer.phone_number
+            email = organizer.email
             
             # Get the events organized by the organizer
             events_organized = Event.query.filter_by(organizer_username=username).all()
@@ -568,6 +589,8 @@ def get_organizer_details(username):
             return {
                 'name': name,
                 'username': username,
+                'phone': phone,
+                'email': email,
                 'events_organized': events_organized
             }
     
