@@ -1,0 +1,27 @@
+<!-- view_participants.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Participants</title>
+</head>
+<body>
+    <h1>Participants List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for participant_info in participants_info %}
+            <tr>
+                <td>{{ participant_info[0] }}</td>
+                <td>{{ participant_info[1] }}</td>
+                <td><a href="/participant_details/{{ participant_info[0] }}" class="details-btn">Details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

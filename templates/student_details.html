@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Details</title>
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+</head>
+<body>
+    <h2>Student Details</h2>
+    <table>
+        <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Name</td>
+            <td>{{ student.name }}</td>
+        </tr>
+        <tr>
+            <td>Username</td>
+            <td>{{ student.username }}</td>
+        </tr>
+        <tr>
+            <td>Roll Number</td>
+            <td>{{ student.roll_number }}</td>
+        </tr>
+        <tr>
+            <td>Department</td>
+            <td>{{ student.department }}</td>
+        </tr>
+    </table>
+
+    <h2>Events Participated</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Date</th>
+        </tr>
+        {% for event in student.events_participated %}
+        <tr>
+            <td>{{ event.name }}</td>
+            <td>{{ event.type }}</td>
+            <td>{{ event.date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Events Volunteered</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Date</th>
+        </tr>
+        {% for event in student.events_volunteered %}
+        <tr>
+            <td>{{ event.name }}</td>
+            <td>{{ event.type }}</td>
+            <td>{{ event.date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

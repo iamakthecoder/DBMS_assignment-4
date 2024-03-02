@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participant Details</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Participant Details</h1>
+    <table>
+        <tr>
+            <th>Username</th>
+            <td>{{ participant.username }}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{ participant.name }}</td>
+        </tr>
+        <tr>
+            <th>College</th>
+            <td>{{ participant.college }}</td>
+        </tr>
+        <tr>
+        </table>
+            <h2>Events Participated</h2>
+            <td>
+                <table>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Event Type</th>
+                    </tr>
+                    {% for event in participant.events_participated %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.type }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+</body>
+</html>

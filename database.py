@@ -460,3 +460,115 @@ def get_venue():
     return Venue.query.all()
 def get_venue_from_id(venueid):
     return Venue.query.get(venueid)
+def get_all_participants():
+    """
+    Get the name and username of all participants.
+    """
+    # Query the Participant table to fetch all participants
+    participants_info = db.session.query(Users.username, Participant.name).\
+        join(Participant, Users.username == Participant.user_name).all()
+    
+    return participants_info
+
+def get_organizers():
+    # Query the database to retrieve the name and username of all organizers
+    organizers = Organizer.query.with_entities(Organizer.name, Organizer.user_name).all()
+    return organizers
+
+def get_students():
+    """
+    Get the username and name of all students.
+    Returns:
+        List of tuples containing (username, name).
+    """
+    students = db.session.query(Student.user_name, Student.name).all()
+    return students
+
+
+def get_participant_events(username):
+    """
+    Get the events the user is registered in as a participant.
+    """
+    participant_events = Event.query.join(EventParticipant).filter(EventParticipant.participant_id == username).all()
+    return participant_events
+
+def get_volunteer_events(username):
+    """
+    Get the events the user is registered in as a volunteer.
+    """
+    volunteer_events = Event.query.join(EventVolunteer).filter(EventVolunteer.volunteer_id == username).all()
+    return volunteer_events
+
+def get_student_details(username):
+    # Query the Student table to get student details
+    student = Student.query.filter_by(user_name=username).first()
+
+    if student:
+        # Fetch additional details from the Users table
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            name = student.name
+            roll_number = student.roll_number
+            department = student.department
+            events_participated = get_participant_events(username)
+            events_volunteered = get_volunteer_events(username)
+            
+            # Return a dictionary containing all the details
+            return {
+                'name': name,
+                'username': username,
+                'roll_number': roll_number,
+                'department': department,
+                'events_participated': events_participated,
+                'events_volunteered': events_volunteered
+            }
+    
+    return None
+
+def get_participant_details(username):
+    # Query the Participant table to get participant details
+    participant = Participant.query.filter_by(user_name=username).first()
+
+    if participant:
+        # Fetch additional details from the Users table
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            name = participant.name
+            college = participant.college_name
+            
+            # Fetch events participated by the participant
+            events_participated = get_participant_events(username)
+            
+            # Return a dictionary containing all the details
+            return {
+                'username': username,
+                'name': name,
+                'college': college,
+                'events_participated': events_participated
+            }
+    
+    return None
+
+def get_organizer_details(username):
+    # Query the Organizer table to get organizer details
+    organizer = Organizer.query.filter_by(user_name=username).first()
+
+    if organizer:
+        # Fetch additional details from the Users table
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            name = organizer.name
+            
+            # Get the events organized by the organizer
+            events_organized = Event.query.filter_by(organizer_username=username).all()
+
+            # Return a dictionary containing all the details
+            return {
+                'name': name,
+                'username': username,
+                'events_organized': events_organized
+            }
+    
+    return None
+
+

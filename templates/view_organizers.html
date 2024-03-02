@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View Organizers</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <nav class="Navbar">
+    <h1 ></h1>
+    <a href="/notifications" class="notification">Notifications</a>
+    <a href="/logout" class="logout">Logout</a>
+</nav>
+  <h2 class="welcome">View Organizers</h2>
+  <table class="organizers-table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for organizer in organizers %}
+      <tr>
+        <td>{{ organizer[1] }}</td>
+        <td>{{ organizer[0] }}</td>
+        <td><a href="/organizer_details/{{ organizer[1] }}" class="details-btn">Details</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
