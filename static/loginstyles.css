@@ -3,8 +3,8 @@ body {
     text-align: center;
     font-size: 25px;
     color:#f6f5f5;
-    background-image: url('/DBMS_assignment-4/templates/IMG_5262.JPG');
-    background-size :cover;
+    background-image: url('./images/IMG_5262.JPG');
+    /* background-size :cover; */
     background-repeat: no-repeat;
 }
 .login{

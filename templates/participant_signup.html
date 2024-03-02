@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Participant Signup</title>
-<link rel="stylesheet" typr="text/css" href="psignup.css">
+<link rel="stylesheet" typr="text/css" href="{{ url_for('static', filename='psignup.css') }}">
 </head>
 <body>
 <div class="signup">
@@ -44,7 +44,7 @@
       {% endfor %}
     </select>
 
-    <input type="submit" value="Submit" class="submit">
+    <input type="submit" value="SignUp" class="submit">
   </form>
 
 </div>

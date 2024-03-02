@@ -1,11 +1,14 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    font-size: 25px;
+    font-size: 20px;
     color:#f6f5f5;
-    background-image: url('/DBMS_assignment-4/templates/IMG_5262.JPG');
-    background-size :cover;
+    background-image: url('./images/IMG_5262.JPG');
+    /* background-size :cover; */
     background-repeat: no-repeat;
+}
+.heading{
+    font-size:35px;
 }
 .signup{
     height:90vh;
@@ -16,7 +19,7 @@ body {
   }
   .form{
     margin:10px;
-    padding:25px;
+    padding:20px;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -25,13 +28,14 @@ body {
     background-color:rgb(255, 255, 255);
     border-radius:10px;
     opacity: 0.8;
+    width:300px;
     color:black;
     box-shadow: 5px 5px 15px -1px rgba(0,0,0,0.75);
   }
   .input{
     margin:10px;
     width:100%;
-    font-size:20px;
+    font-size:15px;
     border-radius:5px;
     border:1.4px solid gray;
   }

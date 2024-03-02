@@ -25,20 +25,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='studentdashboard.css') }}">
 </head>
 <body>
-    <h1>Student Dashboard</h1>
-    <div>
-        <a href="/student_register_events" class="btn">Register for an event</a>
+    <nav className="Navbar">
+        <h1 ></h1>
+        <a href="" class="notification">Notifications</a>
+    
+        <a href="" class="logout">Logout</a>
+        <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+    </nav>
+    <h1  class="welcome"> Student Dashboard</h1>
+    <div class="signup" >
+        <div>
+            <a href="/student_register_events" class="btn">Register for an event</a>
+        </div>
+        <div>
+            <a href="/student_registered_in_events" class="btn">See Registered Events</a>  
+        </div>
+        <div>
+            <a href="/SeeWinners" class="btn">See Real Time Winners</a>
+            
+        </div>
     </div>
-    <div>
-        <a href="/student_registered_in_events" class="btn">See Registered Events</a>
-        
-    </div>
-    <div>
-        <a href="/SeeWinners" class="btn">See Real Time Winners</a>
-        
-    </div>
+    
 
    
 </body>

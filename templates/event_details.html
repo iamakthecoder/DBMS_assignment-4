@@ -4,29 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Details</title>
+    <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='eventdetails.css') }}">
+    <!-- <link rel='stylesheet' type='text/css' href="../static//eventdetails.css"> -->
 </head>
 <body>
-    <h1>Event Details</h1>
-    <h2>{{ event.name }}</h2>
+    <nav className="Navbar">
+    <h1 ></h1>
+    <a href="" class="notification">Notifications</a>
+
+    <a href="" class="logout">Logout</a>
+    <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+    </nav>
+    <h1 class="heading">Event Details</h1>
+    <h2 class="heading1">{{ event.name }}</h2>
     <p><strong>Type:</strong> {{ event.type }}</p>
     <p><strong>Date:</strong> {{ event.date }}</p>
     <p><strong>Winner:</strong> {{ winner_name}} - username: {{ event.winner_username }}</p>
 
-    <h2>Volunteers</h2>
-    <ul>
+    <h2 class="heading1">Volunteers</h2>
+    <!-- <ul>
         {% for volunteer in volunteers %}
         <li>{{ volunteer.name }} - {{ volunteer.roll_number }}</li>
         {% endfor %}
-    </ul>
-
-    <h2>Select Participant</h2>
-    <form action="/submit_winner/{{ event.id }}" method="post">
-        <select name="winner">
-            {% for participant in participants %}
-            <option value="{{ participant[0] }}">{{ participant[1] }} - {{ participant[0] }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Submit Winner">
-    </form>
+    </ul> -->
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Volunteer Name</th>
+                    <th>Roll Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for volunteer in volunteers %}
+                <tr>
+                    <td>{{ volunteer.name }}</td>
+                    <td>{{ volunteer.roll_number }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>  
+    <div class="signup">
+        <h2 class="heading">Update Winner</h2>
+        <form action="/submit_winner/{{ event.id }}" method="post" class="form">
+            <select name="winner" class="option">
+                {% for participant in participants %}
+                <option value="{{ participant[0] }}" class="option">{{ participant[1] }} - {{ participant[0] }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Submit Winner" class="submit">
+        </form>
+    </div>
+    
 </body>
 </html>

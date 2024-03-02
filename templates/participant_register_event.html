@@ -4,33 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registered Events</title>
+    <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='viewevent.css') }}">
     <!-- CSS styles omitted for brevity -->
 </head>
 <body>
-    <h1>Register in Events</h1>
+    <nav className="Navbar">
+        <h1 ></h1>
+        <a href="" class="notification">Notifications</a>
+    
+        <a href="" class="logout">Logout</a>
+        <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+    </nav>
+    <h1 class="heading">Register in Events</h1>
     <form id="event-form" action="/participant_register_events" method="POST">
-        <table>
-            <thead>
-                <tr>
-                    <th>Event Name</th>
-                    <th>Date</th>
-                    <th>Type of Event</th>
-                    <th>Register as participant</th> <!-- Checkbox 1 column -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for event in events %}
-                <tr>
-                    <td>{{ event.name }}</td>
-                    <td>{{ event.date }}</td>
-                    <td>{{ event.type }}</td>
-                    <td><input type="checkbox" name="participant" value="{{ event.id }}"></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br>
-        <input type="submit" value="Submit">
+        <div class="table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Type of Event</th>
+                        <th>Register as participant</th> <!-- Checkbox 1 column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ event.date }}</td>
+                        <td>{{ event.type }}</td>
+                        <td><input type="checkbox" name="participant" value="{{ event.id }}"></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        
+        <input type="submit" value="Submit" class="submit">
     </form>
 
     <script>

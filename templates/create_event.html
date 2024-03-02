@@ -4,23 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Event</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='signup.css') }}">
 </head>
 <body>
+  <nav className="Navbar">
+    <h1 ></h1>
+    <a href="" class="notification">Notifications</a>
 
-<h2>Create Event</h2>
+    <a href="" class="logout">Logout</a>
+    <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+</nav>
 
-<form action="/create_event" method="post">
-  <label for="name">Event Name:</label><br>
-  <input type="text" id="name" name="name" required><br><br>
+<div class="signup1">
+  <h2>Create Event</h2>
+  <form action="/create_event" method="post" class="form">
+    <label for="name">Event Name:</label>
+    <input type="text" id="name" name="name" class="input" required>
 
-  <label for="type">Event Type:</label><br>
-  <input type="text" id="type" name="type" required><br><br>
+    <label for="type">Event Type:</label>
+    <input type="text" id="type" name="type" class="input" required>
 
-  <label for="date">Event Date:</label><br>
-  <input type="date" id="date" name="date" required><br><br>
+    <label for="date">Event Date:</label>
+    <input type="date" id="date" name="date" class="input" required>
 
-  <input type="submit" value="Create Event">
-</form>
+    <input type="submit" value="Create Event" class="submit">
+  </form>
+</div>
+
 
 </body>
 </html>

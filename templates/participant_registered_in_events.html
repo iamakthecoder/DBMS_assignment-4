@@ -4,19 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Events</title>
+<link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='viewevent.css') }}">
 </head>
 <body>
+  <nav className="Navbar">
+    <h1 ></h1>
+    <a href="" class="notification">Notifications</a>
 
-<h2>Registered as Participant</h2>
-<ul>
-  {% for event in participant_events %}
-  <li>
-    <strong>Name:</strong> {{ event.name }}<br>
-    <strong>Type:</strong> {{ event.type }}<br>
-    <strong>Date:</strong> {{ event.date }}
-  </li>
-  {% endfor %}
-</ul>
+    <a href="" class="logout">Logout</a>
+    <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+</nav>
+<h1 class="heading">Registered as Participant</h1>
+    <div class="table">
+        <table border="1">
+            <tr>
+                <th>Event Name</th>
+                <th>Type</th>
+                <th>Date</th>
+            </tr>
+            {% for event in participant_events %} 
+            <tr>
+                <td>{{ event.name }}</td>
+                <td>{{ event.type }}</td>
+                <td>{{ event.date }}</td>
+            </tr>
+             {% endfor %}
+            <!-- <tr>
+                <td>pronite</td>
+                <td>concert</td>
+                <td>02-03-2024</td>
+            </tr>
+            <tr>
+                <td>pronite</td>
+                <td>concert</td>
+                <td>02-03-2024</td>
+            </tr> -->
+        </table>
+    </div>
 
 
 </body>

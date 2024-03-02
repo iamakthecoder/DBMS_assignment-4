@@ -4,18 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Organizer Dashboard</title>
+<link rel="stylesheet" type="text/css" href="../static/studentdashboard.css">
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='studentdashboard.css') }}"> -->
 </head>
 <body>
+  <nav className="Navbar">
+    <h1 ></h1>
+    <a href="" class="notification">Notifications</a>
 
-<h2>Organizer Dashboard</h2>
+    <a href="" class="logout">Logout</a>
+    <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+</nav>
+  <h1 class="welcome">Organizer Dashboard</h1>
+  <div class="signup" >
+    <form action="/organizer_view_events" method="get">
+      <button type="submit" class="btn">View Events</button>
+    </form>
 
-<form action="/organizer_view_events" method="get">
-  <button type="submit">View Events</button>
-</form>
+    <form action="/create_event" method="get">
+      <button type="submit" class="btn">Create New Event</button>
+    </form>
+  </div>
 
-<form action="/create_event" method="get">
-  <button type="submit">Create New Event</button>
-</form>
 
 </body>
 </html>
