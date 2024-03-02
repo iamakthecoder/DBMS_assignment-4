@@ -183,20 +183,23 @@ def create_event():
 def event_details(event_id):
     if 'username' not in session:
         return redirect(url_for('index'))
-    if session['user_type']!='Organizer':
+    if session['user_type']!='Organizer' and session['user_type']!='Admin':
         return redirect(url_for('index'))
     
-    org_username = session['username']
-    org_allowed = is_organizer_allowed(org_username)
-    if not org_allowed:
-        return redirect(url_for('Organizer_dashboard'))
+    if(session['user_type']=='Organizer'):
+        org_username = session['username']
+        org_allowed = is_organizer_allowed(org_username)
+        if not org_allowed:
+            return redirect(url_for('Organizer_dashboard'))
     
     event = get_event_details(event_id)
-    venue = get_venue_from_id(event.venueid)
+    # venue = get_venue_from_id(event['venueid'])
     volunteers = get_event_volunteers(event_id)
     participants = get_participants_for_event(event_id)
-    winner_name = get_name_by_username(event.winner_username)
-    return render_template('event_details.html', event=event, winner_name=winner_name, volunteers=volunteers, participants=participants, venue=venue)
+    winner_name = get_name_by_username(event['winner_username'])
+    if(session['user_type']=='Organizer'):
+        return render_template('event_details.html', event=event, winner_name=winner_name,volunteers=volunteers, participants=participants)
+    return render_template('event_detail.html', event=event, winner_name=winner_name,volunteers=volunteers, participants=participants)
 
 @app.route('/submit_winner/<int:event_id>', methods=['GET', 'POST'])
 def submit_winner(event_id):
@@ -429,6 +432,27 @@ def organizer_details(username):
     organizer = get_organizer_details(username)
     if organizer:
         return render_template('organizer_details.html', organizer=organizer)
+
+@app.route('/admin_view_events')
+def admin_view_events():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    
+    
+   
+
+    events = get_all_events2()
+    return render_template('admin_view_events.html', events=events)
+# def event_details(username):
+#     if 'username' not in session:
+#         return redirect(url_for('index'))
+#     if session['user_type']!='Admin':
+#         return redirect(url_for('index'))
+#     event = get_event_details(username)
+#     if event:
+#         return render_template('event_details.html', event=event)
 
 
 if __name__=="__main__":

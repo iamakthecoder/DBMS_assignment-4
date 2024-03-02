@@ -49,17 +49,7 @@
             </tbody>
         </table>
     </div>  
-    <div class="signup">
-        <h2 class="heading">Update Winner</h2>
-        <form action="/submit_winner/{{ event.id }}" method="post" class="form">
-            <select name="winner" class="option">
-                {% for participant in participants %}
-                <option value="{{ participant[0] }}" class="option">{{ participant[1] }} - {{ participant[0] }}</option>
-                {% endfor %}
-            </select>
-            <input type="submit" value="Submit Winner" class="submit">
-        </form>
-    </div>
+    
     
 </body>
 </html>

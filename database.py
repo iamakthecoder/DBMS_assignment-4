@@ -285,9 +285,11 @@ def get_college_names():
 
 def get_all_events(username):
     return Event.query.filter_by(organizer_username=username).all()
+def get_all_events2():
+    return Event.query.all()
 
-def get_event_details(event_id):
-    return Event.query.get(event_id)
+# def get_event_details(event_id):
+#     return Event.query.get(event_id)
 
 def get_event_volunteers(event_id):
     # Joining EventVolunteer and Student tables
@@ -570,5 +572,40 @@ def get_organizer_details(username):
             }
     
     return None
+
+
+
+def get_event_details(event_id):
+    """
+    Fetches event details based on the event ID.
+    
+    Parameters:
+        event_id (int): The ID of the event.
+        
+    Returns:
+        dict: A dictionary containing event details.
+    """
+    # Query the Event table to get event details
+    event = Event.query.filter_by(id=event_id).first()
+
+    if event:
+        # Fetch additional details from the Venue table
+        venue = Venue.query.filter_by(id=event.venueid).first()
+
+        # Return a dictionary containing all the details
+        return {
+            'id': event.id,
+            'name': event.name,
+            'type': event.type,
+            'date': event.date,
+            'prize': event.prize,
+            'venue': venue.name if venue else None,
+            # 'description' : event.description,
+            'organizer_username': event.organizer_username,
+            'winner_username': event.winner_username
+        }
+    
+    return None
+
 
 
