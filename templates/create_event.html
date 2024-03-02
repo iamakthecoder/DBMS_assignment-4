@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Event</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='signup.css') }}">
+<style>
+  .error-message {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+  }
+</style>
 </head>
 <body>
   <nav className="Navbar">
@@ -19,6 +27,9 @@
 <div class="signup1">
   <h1>Create Event</h1>
   <form action="/create_event" method="post" class="form">
+    {% if error %}
+      <p class="error-message">{{ error }}</p>
+    {% endif %}
     <label for="name">Event Name</label>
     <input type="text" id="name" name="name" class="input" required>
 

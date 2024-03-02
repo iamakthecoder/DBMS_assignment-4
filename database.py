@@ -630,5 +630,16 @@ def get_event_details(event_id):
     
     return None
 
+def check_venue_date(venueid, date):
+    venue = Venue.query.get(venueid)
+    if venue.name.lower() == 'online':
+        return True
+    else:
+        event = Event.query.filter_by(venueid=venueid, date=date).first()
+        if event:
+            return False
+        else:
+            return True
+
 
 

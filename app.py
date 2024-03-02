@@ -163,6 +163,7 @@ def create_event():
     if session['user_type']!='Organizer':
         return redirect(url_for('index'))
     
+    error = None
     org_username = session['username']
     org_allowed = is_organizer_allowed(org_username)
     if not org_allowed:
@@ -177,12 +178,16 @@ def create_event():
         prize=request.form['prize']
         description = request.form['description']
 
-        create_new_event(name, type, date, organizer_username,venueid,prize, description)
-        return redirect(url_for('Organizer_dashboard'))
+        allowed_venue_date = check_venue_date(venueid, date)
+        if not allowed_venue_date:
+            error = "Venue is already booked on the chosen date."
+        else:
+            create_new_event(name, type, date, organizer_username,venueid,prize, description)
+            return redirect(url_for('Organizer_dashboard'))
     
     venues=get_venue()
         
-    return render_template('create_event.html',venues=venues)
+    return render_template('create_event.html',venues=venues, error=error)
     
 
 @app.route('/event/<int:event_id>/details')

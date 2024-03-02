@@ -26,6 +26,14 @@
         return true;
     }
 </script>
+<style>
+  .error-message {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+  }
+</style>
 </head>
 <body>
 <div class="signup">
@@ -34,8 +42,8 @@
 
   <form action="/participant_signup" method="post" class="form" onsubmit="return validateForm();">
     {% if error %}
-                <p class="error-message">{{ error }}</p>
-            {% endif %}
+        <p class="error-message">{{ error }}</p>
+    {% endif %}
     <label for="name">Name:</label>
     <input type="text" id="name" name="name"  class="input" required>
 
