@@ -17,7 +17,7 @@
     </nav>
   <h1 class="welcome" >Allow Organizers</h1>
 
-    <form action="/delete_users" method="post" >
+    <form action="/update_organizers" method="post" >
       <div class="table">
           <table border="1">
               <tr>
@@ -25,11 +25,11 @@
                   <th>Name</th>
                   <th>Approve Organizer</th>
               </tr>
-                {% for username, user_type, name in users %}
+                {% for org in organizers %}
                 <tr>
-                    <td>{{ username }}</td>
-                    <td>{{ name }}</td>
-                    <td><input type="checkbox" id="{{ username }}" name="users[]" value="{{ username }}" class="input"></td>
+                    <td>{{ org.user_name }}</td>
+                    <td>{{ org.name }}</td>
+                    <td><input type="checkbox" id="{{ org.user_name }}" name="organizers[]" value="{{ org.user_name }}" class="input"></td>
                 </tr>
                 {% endfor %}
               
