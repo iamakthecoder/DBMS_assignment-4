@@ -521,6 +521,8 @@ def get_student_details(username):
             name = student.name
             roll_number = student.roll_number
             department = student.department
+            phone = student.phone_number
+            email = student.email
             events_participated = get_participant_events(username)
             events_volunteered = get_volunteer_events(username)
             
@@ -530,6 +532,8 @@ def get_student_details(username):
                 'username': username,
                 'roll_number': roll_number,
                 'department': department,
+                'phone': phone,
+                'email': email,
                 'events_participated': events_participated,
                 'events_volunteered': events_volunteered
             }
@@ -546,6 +550,8 @@ def get_participant_details(username):
         if user:
             name = participant.name
             college = participant.college_name
+            phone = participant.phone_number
+            email = participant.email
             
             # Fetch events participated by the participant
             events_participated = get_participant_events(username)
@@ -555,6 +561,8 @@ def get_participant_details(username):
                 'username': username,
                 'name': name,
                 'college': college,
+                'phone': phone,
+                'email': email,
                 'events_participated': events_participated
             }
     
@@ -569,6 +577,8 @@ def get_organizer_details(username):
         user = Users.query.filter_by(username=username).first()
         if user:
             name = organizer.name
+            phone = organizer.phone_number
+            email = organizer.email
             
             # Get the events organized by the organizer
             events_organized = Event.query.filter_by(organizer_username=username).all()
@@ -577,6 +587,8 @@ def get_organizer_details(username):
             return {
                 'name': name,
                 'username': username,
+                'phone': phone,
+                'email': email,
                 'events_organized': events_organized
             }
     
