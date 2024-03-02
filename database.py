@@ -19,9 +19,11 @@ class Users(db.Model):
 
 class Student(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
-    roll_number= db.Column(db.String(100), nullable=False)
-    name = db.Column(db.String(100),nullable= False)
-    department= db.Column(db.String(100),nullable=False)
+    roll_number = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    department = db.Column(db.String(100), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
 
 class Participant(db.Model):
     user_name  = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
@@ -30,11 +32,15 @@ class Participant(db.Model):
     college_name = db.Column(db.String(255), db.ForeignKey('college.name', ondelete='CASCADE'))
     food_id = db.Column(db.Integer, db.ForeignKey('food.food_id', ondelete='SET NULL'), nullable=True)
     accommodation_id = db.Column(db.Integer, db.ForeignKey('accommodation.accommodation_id', ondelete='SET NULL'), nullable=True)
+    phone_number = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
 
 class Organizer(db.Model):
     user_name = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='CASCADE'), primary_key=True)
     # organizer_id = db.Column(db.Integer, autoincrement=True, nullable=False, unique=True)
     name = db.Column(db.String(100),nullable= False)
+    phone_number = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
     
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
