@@ -42,13 +42,23 @@ class Organizer(db.Model):
     phone_number = db.Column(db.String(20), nullable=True)
     email = db.Column(db.String(100), nullable=True)
     
+
+class Venue(db.Model):
+    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
+    name=db.Column(db.String(255),nullable=False)
+    capacity=db.Column(db.Integer,nullable=False)
+
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
+    prize =db.Column(db.Integer,nullable=False)
+    venueid =db.Column(db.Integer,db.ForeignKey('venue.id',ondelete='CASCADE'),nullable=False)
     organizer_username = db.Column(db.String(100), db.ForeignKey('organizer.user_name', ondelete='CASCADE'), nullable=False)
     winner_username = db.Column(db.String(100), db.ForeignKey('users.username', ondelete='SET NULL'), nullable=True)
+
+
 
 class College(db.Model):
     name = db.Column(db.String(255), primary_key=True)
@@ -311,8 +321,8 @@ def get_accommodation_options():
 def get_organizer(username):
     return Organizer.query.filter_by(user_name=username).first()
 
-def create_new_event(name, type, date, organizer_username):
-    event = Event(name=name, type=type, date=date, organizer_username=organizer_username)
+def create_new_event(name, type, date, organizer_username,venueid,prize):
+    event = Event(name=name, type=type, date=date, organizer_username=organizer_username,venueid=venueid,prize=prize)
     db.session.add(event)
     db.session.commit()
 
@@ -438,8 +448,25 @@ def default_initialization():
             college = College(name=name, location=location)
             db.session.add(college)
 
+    venue_data = [
+        ('Kalidas',400),
+        ('TOAT',3000),
+        ('MG Ground',10000),
+        ('Nehru Museum',3000)
+    ]
+
+    for vname,capacity in venue_data:
+        venue  =Venue.query.filter_by(name=vname).first()
+        if not venue:
+            venue=Venue(name=vname,capacity=capacity)
+            db.session.add(venue)
+
     db.session.commit()
 
+def get_venue():
+    return Venue.query.all()
+def get_venue_from_id(venueid):
+    return Venue.query.get(venueid)
 def get_all_participants():
     """
     Get the name and username of all participants.

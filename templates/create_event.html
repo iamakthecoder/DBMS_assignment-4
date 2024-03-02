@@ -19,14 +19,24 @@
 <div class="signup1">
   <h2>Create Event</h2>
   <form action="/create_event" method="post" class="form">
-    <label for="name">Event Name:</label>
+    <label for="name">Event Name</label>
     <input type="text" id="name" name="name" class="input" required>
 
-    <label for="type">Event Type:</label>
+    <label for="type">Event Type</label>
     <input type="text" id="type" name="type" class="input" required>
 
-    <label for="date">Event Date:</label>
+    <label for="date">Event Date</label>
     <input type="date" id="date" name="date" class="input" required>
+
+    <label for="venue">Event Venue</label>
+    <select id="venue" name="venue" class="input" >
+      {% for venue in venues %}
+      <option value="{{ venue.id }}">{{ venue.name }} - {{ venue.capacity }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="prize">Prize Amount</label>
+    <input type="number" id="prize" name="prize" class="input" required>
 
     <input type="submit" value="Create Event" class="submit">
   </form>
