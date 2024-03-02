@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Details</title>
+    <!-- Add any CSS links or stylesheets here -->
+</head>
+<body>
+    <h1>Organizer Details</h1>
+    <table border="1">
+        <tr>
+            <th>Username</th>
+            <th>Name</th>
+        </tr>
+        <tr>
+            <td>{{ organizer.username }}</td>
+            <td>{{ organizer.name }}</td>
+        </tr>
+    </table>
+
+    <h2>Events Organized</h2>
+    <table border="1">
+        <tr>
+            <th>Event Name</th>
+            <th>Event Type</th>
+            <th>Date</th>
+        </tr>
+        {% for event in organizer.events_organized %}
+        <tr>
+            <td>{{ event.name }}</td>
+            <td>{{ event.type }}</td>
+            <td>{{ event.date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

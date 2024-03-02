@@ -522,4 +522,26 @@ def get_participant_details(username):
     
     return None
 
+def get_organizer_details(username):
+    # Query the Organizer table to get organizer details
+    organizer = Organizer.query.filter_by(user_name=username).first()
+
+    if organizer:
+        # Fetch additional details from the Users table
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            name = organizer.name
+            
+            # Get the events organized by the organizer
+            events_organized = Event.query.filter_by(organizer_username=username).all()
+
+            # Return a dictionary containing all the details
+            return {
+                'name': name,
+                'username': username,
+                'events_organized': events_organized
+            }
+    
+    return None
+
 

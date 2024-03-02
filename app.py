@@ -405,6 +405,16 @@ def participant_details(username):
     if participant:
         return render_template('participant_details.html', participant=participant)
 
+@app.route('/organizer_details/<username>')
+def organizer_details(username):
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    organizer = get_organizer_details(username)
+    if organizer:
+        return render_template('organizer_details.html', organizer=organizer)
+
 
 if __name__=="__main__":
     with app.app_context():
