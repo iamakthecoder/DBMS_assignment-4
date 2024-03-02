@@ -175,9 +175,9 @@ def create_event():
         organizer_username = session['username']  # Assuming username is stored in session
         venueid=request.form['venue']
         prize=request.form['prize']
+        description = request.form['description']
 
-
-        create_new_event(name, type, date, organizer_username,venueid,prize)
+        create_new_event(name, type, date, organizer_username,venueid,prize, description)
         return redirect(url_for('Organizer_dashboard'))
     
     venues=get_venue()

@@ -326,8 +326,8 @@ def get_accommodation_options():
 def get_organizer(username):
     return Organizer.query.filter_by(user_name=username).first()
 
-def create_new_event(name, type, date, organizer_username,venueid,prize):
-    event = Event(name=name, type=type, date=date, organizer_username=organizer_username,venueid=venueid,prize=prize)
+def create_new_event(name, type, date, organizer_username,venueid,prize,description):
+    event = Event(name=name, type=type, date=date, organizer_username=organizer_username,venueid=venueid,prize=prize,description=description)
     db.session.add(event)
     db.session.commit()
 
@@ -623,7 +623,7 @@ def get_event_details(event_id):
             'date': event.date,
             'prize': event.prize,
             'venue': venue.name if venue else None,
-            # 'description' : event.description,
+            'description' : event.description,
             'organizer_username': event.organizer_username,
             'winner_username': event.winner_username
         }
