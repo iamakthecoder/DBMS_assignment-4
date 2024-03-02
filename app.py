@@ -395,6 +395,16 @@ def student_details(username):
     if student:
         return render_template('student_details.html', student=student)
 
+@app.route('/participant_details/<username>')
+def participant_details(username):
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Admin':
+        return redirect(url_for('index'))
+    participant = get_participant_details(username)
+    if participant:
+        return render_template('participant_details.html', participant=participant)
+
 
 if __name__=="__main__":
     with app.app_context():

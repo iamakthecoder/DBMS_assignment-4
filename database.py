@@ -498,3 +498,28 @@ def get_student_details(username):
     
     return None
 
+def get_participant_details(username):
+    # Query the Participant table to get participant details
+    participant = Participant.query.filter_by(user_name=username).first()
+
+    if participant:
+        # Fetch additional details from the Users table
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            name = participant.name
+            college = participant.college_name
+            
+            # Fetch events participated by the participant
+            events_participated = get_participant_events(username)
+            
+            # Return a dictionary containing all the details
+            return {
+                'username': username,
+                'name': name,
+                'college': college,
+                'events_participated': events_participated
+            }
+    
+    return None
+
+
