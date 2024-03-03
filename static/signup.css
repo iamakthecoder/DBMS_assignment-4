@@ -1,11 +1,29 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    font-size: 3vh;
-    color:#f6f5f5;
-    background-image: url('./images/IMG_5262.JPG');
-    background-size :cover;
-    background-repeat: no-repeat;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  font-size: 25px;
+  color:#f6f5f5;
+  background-image: url('./images/IMG_5262.JPG');
+  background-size :cover;
+  background-repeat: no-repeat;
+  margin:0 0 20px 0;
+}
+.welcome{
+  font-size:45px;
+  padding: bottom 20vh;
+  margin-top:100px;
+}
+.Navbar{
+  background-color:rgb(246, 243, 243,0.08);
+  margin:0 0 20px 0;
+  box-shadow: 1px 1px 50px 3px #adacac;
+}
+.welcome1{
+  font-size:45px;
+  padding: 0 40px;
+  color:white;
+  margin-top:20px;
+  margin-bottom:20px;
 }
 .signup{
     height:90vh;

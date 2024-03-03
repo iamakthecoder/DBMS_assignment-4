@@ -15,8 +15,8 @@
 </style>
 </head>
 <body>
-  <nav className="Navbar">
-    <h1 ></h1>
+  <nav class="Navbar">
+    <h1 class="welcome1">Events</h1>
     <a href="/dashboard" class="notification">Dashboard</a>
     <a href="/notifications" class="notification">Notifications</a>
 
@@ -25,7 +25,7 @@
 </nav>
 
 <div class="signup1">
-  <h1>Create Event</h1>
+  <h1 class="welcome">Create Event</h1>
   <form action="/create_event" method="post" class="form">
     {% if error %}
       <p class="error-message">{{ error }}</p>

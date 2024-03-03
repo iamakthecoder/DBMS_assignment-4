@@ -19,14 +19,32 @@ th, td {
     border: 2px solid #0b0b0b;
     text-align: center;
 }
-body{
+body {
     font-family: Arial, sans-serif;
     text-align: center;
     font-size: 25px;
-    color:#fffefe;
+    color:#f6f5f5;
     background-image: url('./images/IMG_5262.JPG');
-    background-size:cover ;
+    background-size :cover;
     background-repeat: no-repeat;
+    margin:0 0 20px 0;
+}
+.welcome{
+    font-size:45px;
+    padding: bottom 20vh;
+    margin-top:100px;
+}
+.Navbar{
+    background-color:rgb(246, 243, 243,0.08);
+    margin:0 0 20px 0;
+    box-shadow: 1px 1px 50px 3px #adacac;
+}
+.welcome1{
+    font-size:45px;
+    padding: 0 40px;
+    color:white;
+    margin-top:20px;
+    margin-bottom:20px;
 }
 .submit{
     background-color: rgba(255, 255, 255, 0.9);
@@ -40,6 +58,9 @@ body{
   }
 .heading{
     text-align: center;
+    font-size:45px;
+    padding: bottom 20vh;
+    margin-top:100px;
 }
 /* th {
     background-color: #f2f2f2;
@@ -92,4 +113,5 @@ nav >a{
     background-color: rgba(255, 255, 255, 0.7);
     border-radius:10px;
     padding:5px 15px;
+    margin-right: 10px;
 }
