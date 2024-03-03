@@ -640,6 +640,19 @@ def check_venue_date(venueid, date):
             return False
         else:
             return True
+        
+def get_name(username):
+    users_list = db.session.query(Users.username, func.coalesce(Student.name, Participant.name, Organizer.name, OrganizersAllowed.name)).\
+        outerjoin(Student, Student.user_name == Users.username).\
+        outerjoin(Participant, Participant.user_name == Users.username).\
+        outerjoin(Organizer, Organizer.user_name == Users.username).\
+        outerjoin(OrganizersAllowed, OrganizersAllowed.user_name == Users.username).\
+        filter(Users.username == username).first()
+    
+    if users_list:
+        return users_list[1]
+    else:
+        return None
 
 
 
