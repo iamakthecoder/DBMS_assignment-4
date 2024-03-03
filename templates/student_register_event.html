@@ -9,25 +9,25 @@
     <!-- CSS styles omitted for brevity -->
 </head>
 <body>
-    <nav className="Navbar">
-        <h1 ></h1>
+    <nav class="Navbar">
+        <h1 class="welcome1">Events</h1>
         <a href="/dashboard" class="notification">Dashboard</a>
         <a href="/notifications" class="notification">Notifications</a>
-
+    
         <a href="/logout" class="logout">Logout</a>
         <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
     </nav>
     <h1 class="heading">Register in Events</h1>
     <form id="event-form" action="/student_register_events" method="POST">
-        <div class="table">
+        <!-- <div class="table">
             <table>
                 <thead>
                     <tr>
                         <th>Event Name</th>
                         <th>Date</th>
                         <th>Type of Event</th>
-                        <th>Register as participant</th> <!-- Checkbox 1 column -->
-                        <th>Register as Volunteer</th> <!-- Checkbox 2 column -->
+                        <th>Register as participant</th> 
+                        <th>Register as Volunteer</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -41,8 +41,8 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-            </table>
-        </div>
+            </table> -->
+        <!-- </div> -->
         
         <br>
         <input type="submit" value="Submit" class="submit">

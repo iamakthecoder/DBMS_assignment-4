@@ -381,15 +381,51 @@ def get_participant_events(username):
     """
     Get the events the user is registered in as a participant.
     """
-    participant_events = Event.query.join(EventParticipant).filter(EventParticipant.participant_id == username).all()
-    return participant_events
+
+    participant_events = db.session.query(EventParticipant.participant_id, Event, Venue.name).\
+        join(Event, Event.id == EventParticipant.event_id).\
+        join(Venue, Venue.id == Event.venueid).\
+        filter(EventParticipant.participant_id == username).all()
+    
+    # participant_events = Event.query.join(EventParticipant).filter(EventParticipant.participant_id == username).all()
+    participant_events_data = []
+
+    for participant, event, venue_name in participant_events:
+        event_data = {
+            'id': event.id,
+            'name': event.name,
+            'type': event.type,
+            'description': event.description,
+            'date': event.date,
+            'prize': event.prize,
+            'venue': venue_name  # Add venue name as a separate key
+        }
+        participant_events_data.append(event_data)
+    return participant_events_data
 
 def get_volunteer_events(username):
     """
     Get the events the user is registered in as a volunteer.
     """
-    volunteer_events = Event.query.join(EventVolunteer).filter(EventVolunteer.volunteer_id == username).all()
-    return volunteer_events
+    volunteer_events = db.session.query(EventVolunteer.volunteer_id, Event, Venue.name).\
+        join(Event, Event.id == EventVolunteer.event_id).\
+        join(Venue, Venue.id == Event.venueid).\
+        filter(EventVolunteer.volunteer_id == username).all()
+    
+    volunteer_events_data = []
+
+    for volunteer, event, venue_name in volunteer_events:
+        event_data = {
+            'id': event.id,
+            'name': event.name,
+            'type': event.type,
+            'description': event.description,
+            'date': event.date,
+            'prize': event.prize,
+            'venue': venue_name  # Add venue name as a separate key
+        }
+        volunteer_events_data.append(event_data)
+    return volunteer_events_data
 
 def get_college_names():
     # Query all colleges and retrieve their names
@@ -604,19 +640,19 @@ def get_students():
     return students
 
 
-def get_participant_events(username):
-    """
-    Get the events the user is registered in as a participant.
-    """
-    participant_events = Event.query.join(EventParticipant).filter(EventParticipant.participant_id == username).all()
-    return participant_events
+# def get_participant_events(username):
+#     """
+#     Get the events the user is registered in as a participant.
+#     """
+#     participant_events = Event.query.join(EventParticipant).filter(EventParticipant.participant_id == username).all()
+#     return participant_events
 
-def get_volunteer_events(username):
-    """
-    Get the events the user is registered in as a volunteer.
-    """
-    volunteer_events = Event.query.join(EventVolunteer).filter(EventVolunteer.volunteer_id == username).all()
-    return volunteer_events
+# def get_volunteer_events(username):
+#     """
+#     Get the events the user is registered in as a volunteer.
+#     """
+#     volunteer_events = Event.query.join(EventVolunteer).filter(EventVolunteer.volunteer_id == username).all()
+#     return volunteer_events
 
 def get_student_details(username):
     # Query the Student table to get student details

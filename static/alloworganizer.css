@@ -6,10 +6,24 @@ body {
     background-image: url('./images/IMG_5262.JPG');
     background-size :cover;
     background-repeat: no-repeat;
+    margin:0 0 20px 0;
 }
 .welcome{
     font-size:45px;
     padding: bottom 20vh;
+    margin-top:100px;
+}
+.Navbar{
+    background-color:rgb(246, 243, 243,0.08);
+    margin:0 0 20px 0;
+    box-shadow: 1px 1px 50px 3px #adacac;
+}
+.welcome1{
+    font-size:45px;
+    padding: 0 40px;
+    color:white;
+    margin-top:20px;
+    margin-bottom:20px;
 }
 .btn {
     display: inline-block;
@@ -76,6 +90,7 @@ nav >a{
     background-color: rgba(255, 255, 255, 0.7);
     border-radius:10px;
     padding:5px 15px;
+    margin-right: 10px;
 }
 .submit{
     background-color:rgb(39, 38, 39);
