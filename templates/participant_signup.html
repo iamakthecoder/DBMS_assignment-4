@@ -70,7 +70,7 @@
     <select id="food" name="food" class="input" >
       <option value="">None</option>
       {% for food in food_options %}
-      <option value="{{ food.food_id }}">{{ food.food_desc }} - ${{ food.price }}</option>
+      <option value="{{ food.food_id }}">{{ food.food_desc }} (Rs.{{ food.price }} per meal)</option>
       {% endfor %}
     </select>
 
@@ -78,7 +78,7 @@
     <select id="accommodation" name="accommodation" class="input" >
       <option value="">None</option>
       {% for accommodation in accommodation_options %}
-      <option value="{{ accommodation.accommodation_id }}">{{ accommodation.name }} - ${{ accommodation.price_per_day }}</option>
+      <option value="{{ accommodation.accommodation_id }}">{{ accommodation.name }} (Rs.{{ accommodation.price_per_day }} per day)</option>
       {% endfor %}
     </select>
 
