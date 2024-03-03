@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import null
-from sqlalchemy import func
+from sqlalchemy import func, or_
 import bcrypt
 
 db = SQLAlchemy()
@@ -79,7 +79,9 @@ class Food(db.Model):
 class Accommodation(db.Model):
     accommodation_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
-    price_per_day = db.Column(db.Float, nullable=False)
+    price_per_day = db.Column(db.Float, nullable=True)
+    capacity = db.Column(db.Integer, nullable=True)
+    current_participants = db.Column(db.Integer, default=0, nullable=True)
 
 class Notifications(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -156,6 +158,48 @@ FOR EACH ROW
 EXECUTE FUNCTION create_event_notification();
 """
 
+create_func_update_current_participants = """
+CREATE OR REPLACE FUNCTION update_current_participants()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.accommodation_id IS NOT NULL THEN
+        UPDATE accommodation
+        SET current_participants = current_participants + 1
+        WHERE accommodation_id = NEW.accommodation_id;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+"""
+
+create_trigger_update_current_participants = """
+CREATE TRIGGER update_current_participants_trigger
+AFTER INSERT ON participant
+FOR EACH ROW
+EXECUTE FUNCTION update_current_participants();
+"""
+
+create_func_decrement_current_participants = """
+CREATE OR REPLACE FUNCTION decrement_current_participants()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF OLD.accommodation_id IS NOT NULL THEN
+        UPDATE accommodation
+        SET current_participants = current_participants - 1
+        WHERE accommodation_id = OLD.accommodation_id;
+    END IF;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+"""
+
+create_trigger_decrement_current_participants = """
+CREATE TRIGGER decrement_current_participants_trigger
+AFTER DELETE ON participant
+FOR EACH ROW
+EXECUTE FUNCTION decrement_current_participants();
+"""
+
 def create_triggers_on_connect(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
 
@@ -199,6 +243,34 @@ def create_triggers_on_connect(dbapi_connection, connection_record):
     trigger_exists = cursor.fetchone() is not None 
     if not trigger_exists:
         cursor.execute(create_trigger_event_insert_notification)
+        dbapi_connection.commit()
+
+    #check if function already exist
+    cursor.execute("SELECT proname FROM pg_proc WHERE proname = 'update_current_participants'")
+    func_exists = cursor.fetchone() is not None
+    if not func_exists:
+        cursor.execute(create_func_update_current_participants)
+        dbapi_connection.commit()
+    
+    # Check if trigger already exist
+    cursor.execute("SELECT * FROM pg_trigger WHERE tgname = 'update_current_participants_trigger'")
+    trigger_exists = cursor.fetchone() is not None 
+    if not trigger_exists:
+        cursor.execute(create_trigger_update_current_participants)
+        dbapi_connection.commit()
+
+    #check if function already exist
+    cursor.execute("SELECT proname FROM pg_proc WHERE proname = 'decrement_current_participants'")
+    func_exists = cursor.fetchone() is not None
+    if not func_exists:
+        cursor.execute(create_func_decrement_current_participants)
+        dbapi_connection.commit()
+    
+    # Check if trigger already exist
+    cursor.execute("SELECT * FROM pg_trigger WHERE tgname = 'decrement_current_participants_trigger'")
+    trigger_exists = cursor.fetchone() is not None 
+    if not trigger_exists:
+        cursor.execute(create_trigger_decrement_current_participants)
         dbapi_connection.commit()
     
     cursor.close()
@@ -321,7 +393,8 @@ def get_food_options():
 
 def get_accommodation_options():
     # Assuming Accommodation is your SQLAlchemy model for the accommodation table
-    return Accommodation.query.all()
+    return Accommodation.query.filter(or_(Accommodation.current_participants < Accommodation.capacity,
+                                          Accommodation.capacity.is_(None))).all()
 
 def get_organizer(username):
     return Organizer.query.filter_by(user_name=username).first()
@@ -433,8 +506,8 @@ def default_initialization():
 
     # Check if there are any entries in the Accommodation table
     if not Accommodation.query.first():
-        tgh_accommodation = Accommodation(name='TGH', price_per_day=1000)
-        vgh_accommodation = Accommodation(name='VGH', price_per_day=800)
+        tgh_accommodation = Accommodation(name='TGH', price_per_day=1000, capacity=400)
+        vgh_accommodation = Accommodation(name='VGH', price_per_day=800, capacity=200)
         db.session.add(tgh_accommodation)
         db.session.add(vgh_accommodation)
 
