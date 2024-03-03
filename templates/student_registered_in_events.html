@@ -18,79 +18,54 @@
   </li>
   {% endfor %}
 </ul> -->
-<nav className="Navbar">
-  <h1 ></h1>
-  <a href="/dashboard" class="notification">Dashboard</a>
-  <a href="/notifications" class="notification">Notifications</a>
+<nav class="Navbar">
+    <h1 class="welcome1">Events</h1>
+    <a href="/dashboard" class="notification">Dashboard</a>
+    <a href="/notifications" class="notification">Notifications</a>
 
     <a href="/logout" class="logout">Logout</a>
-  <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+    <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
 </nav>
 <h1 class="heading">Registered as Participant</h1>
-    <div class="table">
-        <table border="1">
-            <tr>
-                <th>Event Name</th>
-                <th>Type</th>
-                <th>Date</th>
-            </tr>
-            {% for event in participant_events %}
-            <tr>
-                <td>{{ event.name }}</td>
-                <td>{{ event.type }}</td>
-                <td>{{ event.date }}</td>
-            </tr> 
-            {% endfor %}
-            <!-- <tr>
-                <td>pronite</td>
-                <td>concert</td>
-                <td>02-03-2024</td>
-            </tr>
-            <tr>
-                <td>pronite</td>
-                <td>concert</td>
-                <td>02-03-2024</td>
-            </tr> -->
-        </table>
+    
+    <div class="events">
+        {% for event in participant_events %}
+        <div class="flip-card">
+            <div class="flip-card-inner">
+            <div class="flip-card-front">
+                <h3>{{ event.name }}</h3>
+            </div>
+            <div class="flip-card-back">
+                <h3>{{ event.name }}</h3>
+                <p>Type-{{ event.type }}</p>
+                <p>Date-{{ event.date }}</p>
+                <p>Venue-{{ event.venue }}</p>
+                <p>Prize-{{ event.prize }}</p>
+            </div>
+            </div>
+        </div>
+      {% endfor %}
     </div>
-
-<!-- <h2>Registered as Volunteer</h2>
-<ul>
-  {% for event in volunteer_events %}
-  <li>
-    <strong>Name:</strong> {{ event.name }}<br>
-    <strong>Type:</strong> {{ event.type }}<br>
-    <strong>Date:</strong> {{ event.date }}
-  </li>
-  {% endfor %}
-</ul> -->
+    
 <h1 class="heading">Registered as Volunteer</h1>
-    <div class="table">
-        <table border="1">
-            <tr>
-                <th>Event Name</th>
-                <th>Type</th>
-                <th>Date</th>
-            </tr>
-            {% for event in volunteer_events %}
-             <tr>
-                <td>{{ event.name }}</td>
-                <td>{{ event.type }}</td>
-                <td>{{ event.date }}</td>
-            </tr>
-            {% endfor %}
-            <!-- <tr>
-                <td>pronite</td>
-                <td>concert</td>
-                <td>02-03-2024</td>
-            </tr>
-            <tr>
-                <td>pronite</td>
-                <td>concert</td>
-                <td>02-03-2024</td>
-            </tr> -->
-        </table>
+<div class="events">
+    {% for event in volunteer_events %}
+    <div class="flip-card">
+        <div class="flip-card-inner">
+        <div class="flip-card-front">
+            <h3>{{ event.name }}</h3>
+        </div>
+        <div class="flip-card-back">
+            <h3>{{ event.name }}</h3>
+            <p>Type-{{ event.type }}</p>
+            <p>Date-{{ event.date }}</p>
+            <p>Venue-{{ event.venue }}</p>
+            <p>Prize-{{ event.prize }}</p>
+        </div>
+        </div>
     </div>
+  {% endfor %}
+</div>
 
 
 </body>

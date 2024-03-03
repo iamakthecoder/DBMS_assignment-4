@@ -275,6 +275,8 @@ def student_registered_in_events():
 
     # Query the events the user is registered in as a participant
     participant_events = get_participant_events(username)
+    for event in participant_events:
+        print(event)
 
     # Query the events the user is registered in as a volunteer
     volunteer_events = get_volunteer_events(username)
