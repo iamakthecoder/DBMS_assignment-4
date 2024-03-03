@@ -17,13 +17,24 @@
         <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
     </nav>
     <h1 class="welcome">Event Details</h1>
-    <h2 class="heading1">{{ event.name }}</h2>
-    <p><strong>Type:</strong> {{ event.type }}</p>
-    <p><strong>Date:</strong> {{ event.date }}</p>
-    <p><strong>Venue:</strong> {{ event.venue }}</p>
-    <p><strong>Prize:</strong> {{ event.prize }}</p>
-    <p><strong>Winner:</strong> {{ winner_name}} - username: {{ event.winner_username }}</p>
-    <p><strong>Description:</strong> {{event.description}}</p>
+
+    <div class="events">
+        <div class="flip-card1">
+            <div class="flip-card-inner">
+            
+            <div class="flip-card-back3">
+                <h4 class="eventname">{{ event.name }}</h4>
+                <p>Type-{{ event.type }}</p>
+                <p>Date-{{ event.date }}</p>
+                <p>Venue-{{ event.venue }}</p>
+                <p>Prize-{{ event.prize }}</p>
+                <p>Winner-{{ winner_name}}</p>
+                <p>Username-{{ event.winner_username }}</p>
+                <p>Description:{{event.description}}</p>
+            </div>
+            </div>
+        </div>
+    </div>
 
     <h2 class="heading1">Volunteers</h2>
     <!-- <ul>

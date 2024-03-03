@@ -17,43 +17,26 @@
         <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
     </nav>
     <h1 class="heading">Register in Events</h1>
-    <form id="event-form" action="/participant_register_events" method="POST">
-        <div class="table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Event Name</th>
-                        <th>Date</th>
-                        <th>Type of Event</th>
-                        <th>Register as participant</th> <!-- Checkbox 1 column -->
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for event in events %}
-                    <tr>
-                        <td>{{ event.name }}</td>
-                        <td>{{ event.date }}</td>
-                        <td>{{ event.type }}</td>
-                        <td><input type="checkbox" name="participant" value="{{ event.id }}"></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <form id="event-form" action="/student_register_events" method="POST">
+        <div class="events">
+            {% for event in events %}
+            <div class="flip-card1">
+                <div class="flip-card-inner">
+                
+                <div class="flip-card-back1">
+                    <h4 class="eventname">{{ event.name }}</h4>
+                    <p>Type-{{ event.type }}</p>
+                    <p>Date-{{ event.date }}</p>
+                    <p>Venue-{{ event.venue }}</p>
+                    <p>Prize-{{ event.prize }}</p>
+                    <p>Register as Participant-<input type="checkbox" name="participant" value="{{ event.id }}"></p>
+                </div>
+                </div>
+            </div>
+          {% endfor %}
         </div>
-        
-        
         <input type="submit" value="Submit" class="submit">
     </form>
-
-    <script>
-        function checkOneCheckbox(checkbox) {
-            var checkboxes = checkbox.parentNode.parentNode.getElementsByTagName('input');
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i] !== checkbox && checkboxes[i].type === 'checkbox') {
-                    checkboxes[i].checked = false;
-                } 
-            }
-        }
-    </script>
+    
 </body>
 </html>
