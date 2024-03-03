@@ -17,36 +17,24 @@
         <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
     </nav>
     <h1 class="heading">Event List</h1>
-    <div class="table">
-        <table border="1">
-            <tr>
-                <th>Event Name</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Details</th>
-            </tr>
-            {% for event in events %} 
-             <tr>
-                <td>{{ event.name }}</td>
-                <td>{{ event.type }}</td>
-                <td>{{ event.date }}</td>
-                <td><a href="/event/{{ event.id }}/details">View Details</a></td>
-            </tr>
-            {% endfor %}
-            <!-- <tr>
-                <td>pronite</td>
-                <td>concert</td>
-                <td>02-03-2024</td>
-                <td><a href="">View Details</a></td>
-            </tr>
-            <tr>
-                <td>pronite</td>
-                <td>concert</td>
-                <td>02-03-2024</td>
-                <td><a href="">View Details</a></td>
-            </tr> -->
-        </table>
+    <div class="events">
+        {% for event in events %}
+        <div class="flip-card">
+            <div class="flip-card-inner">
+            <div class="flip-card-front">
+                <h3>{{ event.name }}</h3>
+            </div>
+            <div class="flip-card-back">
+                <h3>{{ event.name }}</h3>
+                <p>Type-{{ event.type }}</p>
+                <p>Date-{{ event.date }}</p>
+                <p>Venue-{{ event.venue }}</p>
+                <p>Prize-{{ event.prize }}</p>
+                <p><a href="/event/{{ event.id }}/details">View Details</a></p>
+            </div>
+            </div>
+        </div>
+      {% endfor %}
     </div>
-    
 </body>
 </html>

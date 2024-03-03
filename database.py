@@ -324,13 +324,49 @@ def create_user_organizer(username, password, organizer_name, phone, email):
 
 def get_events_not_registered(username):
     # Query events not registered by the student
-    events = Event.query.filter(Event.id.notin_(db.session.query(EventParticipant.event_id).filter_by(participant_id=username)),
-                                Event.id.notin_(db.session.query(EventVolunteer.event_id).filter_by(volunteer_id=username))).all()
-    return events
+    events_with_venue = db.session.query(Event, Venue.name)\
+    .join(Venue, Venue.id == Event.venueid)\
+    .filter(Event.id.notin_(db.session.query(EventParticipant.event_id).filter_by(participant_id=username)),
+            Event.id.notin_(db.session.query(EventVolunteer.event_id).filter_by(volunteer_id=username)))\
+    .all()
+ 
+    events_data = []
+
+    for event, venue_name in events_with_venue:
+        event_data = {
+            'id': event.id,
+            'name': event.name,
+            'type': event.type,
+            'description': event.description,
+            'date': event.date,
+            'prize': event.prize,
+            'venue': venue_name  # Add venue name as a separate key
+        }
+        events_data.append(event_data)
+    return events_data
 
 def get_events_not_participated(username):
-    events = Event.query.filter(Event.id.notin_(db.session.query(EventParticipant.event_id).filter_by(participant_id=username))).all()
-    return events
+    # events = Event.query.filter(Event.id.notin_(db.session.query(EventParticipant.event_id).filter_by(participant_id=username))).all()
+    # return events
+    events_with_venue = db.session.query(Event, Venue.name)\
+        .join(Venue, Venue.id == Event.venueid)\
+        .filter(Event.id.notin_(db.session.query(EventParticipant.event_id).filter_by(participant_id=username)))\
+        .all()
+    
+    events_data = []
+
+    for event, venue_name in events_with_venue:
+        event_data = {
+            'id': event.id,
+            'name': event.name,
+            'type': event.type,
+            'description': event.description,
+            'date': event.date,
+            'prize': event.prize,
+            'venue': venue_name  # Add venue name as a separate key
+        }
+        events_data.append(event_data)
+    return events_data
 
 def register_as_participant(username, event_id):
     # Register the student as a participant for the event
@@ -402,9 +438,49 @@ def get_college_names():
     return college_names
 
 def get_all_events(username):
-    return Event.query.filter_by(organizer_username=username).all()
+    # return Event.query.filter_by(organizer_username=username).all()
+    events = db.session.query(Event, Venue.name).\
+        join(Venue, Venue.id == Event.venueid).\
+        filter(Event.organizer_username==username).all()
+    
+    # participant_events = Event.query.join(EventParticipant).filter(EventParticipant.participant_id == username).all()
+    events_data = []
+
+    for event, venue_name in events:
+        event_data = {
+            'id': event.id,
+            'name': event.name,
+            'type': event.type,
+            'description': event.description,
+            'date': event.date,
+            'prize': event.prize,
+            'venue': venue_name  # Add venue name as a separate key
+        }
+        events_data.append(event_data)
+    return events_data
+
+
 def get_all_events2():
-    return Event.query.all()
+    # return Event.query.all()
+    events = db.session.query(Event, Venue.name).\
+        join(Venue, Venue.id == Event.venueid).\
+        all()
+    
+    # participant_events = Event.query.join(EventParticipant).filter(EventParticipant.participant_id == username).all()
+    events_data = []
+
+    for event, venue_name in events:
+        event_data = {
+            'id': event.id,
+            'name': event.name,
+            'type': event.type,
+            'description': event.description,
+            'date': event.date,
+            'prize': event.prize,
+            'venue': venue_name  # Add venue name as a separate key
+        }
+        events_data.append(event_data)
+    return events_data
 
 # def get_event_details(event_id):
 #     return Event.query.get(event_id)

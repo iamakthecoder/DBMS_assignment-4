@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>See Winners</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='alloworganizer.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='viewevent.css') }}">
 </head>
 <body>
 
@@ -18,22 +18,19 @@
     </nav>
 
     <h1 class="heading">Event Winners</h1>
-    <div class="table">
-        <table border="1">
-            <tr>
-                <th>Event Name</th>
-                <th>Current Winner</th>
-                <th>Winner's Username</th>
-            </tr>
-            {% for event_name, winner_username, winner_name in events_with_winners %}
-            <tr>
-                <td>{{ event_name }}</td>
-                <td>{{ winner_name }}</td>
-                <td>{{ winner_username }}</td>
-            </tr>
-            {% endfor %}
+    <div class="events">
+        {% for event_name, winner_username, winner_name in events_with_winners %}
+        <div class="flip-card1">
+            <div class="flip-card-inner">
             
-        </table>
+            <div class="flip-card-back2">
+                <h4 class="eventname">{{ event_name }}</h4>
+                <p>Current Winner-{{ winner_name }}</p>
+                <p>Winner's Username-{{ winner_username }}</p>
+            </div>
+            </div>
+        </div>
+      {% endfor %}
     </div>
 </body>
 </html>
