@@ -95,8 +95,10 @@ class OrganizersAllowed(db.Model):
     email = db.Column(db.String(100), nullable=True)
     allowed = db.Column(db.Boolean, nullable=False, default=False)
 
-global username_name_view
+#views
 username_name_view = None
+event_participants_view = None
+events_with_winners_view = None
 
 # Define the SQL command for the trigger function
 create_func_winner_update = """
@@ -214,6 +216,29 @@ LEFT JOIN Organizer ON Organizer.user_name = Users.username
 LEFT JOIN Organizers_allowed ON Organizers_allowed.user_name = Users.username;
 """
 
+create_view_event_participants = """
+CREATE VIEW event_participants_view AS
+SELECT Users.username,
+       Event_participant.event_id,
+       COALESCE(Student.name, Participant.name) AS participant_name
+FROM Users
+JOIN Event_participant ON Event_participant.participant_id = Users.username
+LEFT JOIN Student ON Student.user_name = Users.username
+LEFT JOIN Participant ON Participant.user_name = Users.username;
+"""
+
+create_view_events_with_winners = """
+CREATE VIEW events_with_winners_view AS
+SELECT Event.name AS event_name,
+       Event.winner_username AS winner_username,
+       COALESCE(Student.name, Participant.name) AS winner_name,
+       Event_participant.participant_id as participant_id
+FROM Event
+JOIN Event_participant ON Event.id = Event_participant.event_id
+LEFT JOIN Student ON Student.user_name = Event.winner_username
+LEFT JOIN Participant ON Participant.user_name = Event.winner_username;
+"""
+
 def create_triggers_on_connect(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
 
@@ -291,20 +316,45 @@ def create_triggers_on_connect(dbapi_connection, connection_record):
 
 def create_views_on_connect(dbapi_connection, connection_record):
     global username_name_view
+    global event_participants_view
+    global events_with_winners_view
     cursor = dbapi_connection.cursor()
 
     metadata = MetaData()
+
+    view_exists = db.engine.dialect.has_table(db.engine.connect(), 'username_name_view')
+    # If the view doesn't exist, create it
+    if not view_exists:
+        cursor.execute(create_view_username_name)
+        dbapi_connection.commit()
     username_name_view = Table(
         'username_name_view',
         metadata,
         # autoload=True,  # Corrected parameter name
         autoload_with=db.engine
     )
-    view_exists = db.engine.dialect.has_table(db.engine.connect(), 'username_name_view')
-    # If the view doesn't exist, create it
+
+    view_exists = db.engine.dialect.has_table(db.engine.connect(), 'event_participants_view')
     if not view_exists:
-        cursor.execute(create_view_username_name)
+        cursor.execute(create_view_event_participants)
         dbapi_connection.commit()
+    event_participants_view = Table(
+        'event_participants_view',
+        metadata,
+        # autoload=True,  # Corrected parameter name
+        autoload_with=db.engine
+    )
+
+    view_exists = db.engine.dialect.has_table(db.engine.connect(), 'events_with_winners_view')
+    if not view_exists:
+        cursor.execute(create_view_events_with_winners)
+        dbapi_connection.commit()
+    events_with_winners_view = Table(
+        'events_with_winners_view',
+        metadata,
+        # autoload=True,  # Corrected parameter name
+        autoload_with=db.engine
+    )
 
     cursor.close()
 
@@ -474,11 +524,8 @@ def create_new_event(name, type, date, organizer_username,venueid,prize,descript
     db.session.commit()
 
 def get_participants_for_event(event_id):
-    participants = db.session.query(Users.username, func.coalesce(Student.name, Participant.name)).\
-        join(EventParticipant, EventParticipant.participant_id == Users.username).\
-        outerjoin(Student, Student.user_name == Users.username).\
-        outerjoin(Participant, Participant.user_name == Users.username).\
-        filter(EventParticipant.event_id == event_id).all()
+    participants = db.session.query(event_participants_view.c.username, event_participants_view.c.participant_name).\
+        filter(event_participants_view.c.event_id == event_id).all()
     
     return participants
 
@@ -515,13 +562,13 @@ def get_all_notifications():
 def get_events_and_winners(username):
     # Query events and winners for the given participant username
     
-    events_with_winners = db.session.query(Event.name, Event.winner_username, func.coalesce(Student.name, Participant.name)).\
-        join(EventParticipant, Event.id == EventParticipant.event_id).\
-        outerjoin(Student, Student.user_name == Event.winner_username).\
-        outerjoin(Participant, Participant.user_name == Event.winner_username).\
-        filter(EventParticipant.participant_id == username).all()
+    events_with_winners = db.session.query(events_with_winners_view.c.event_name, 
+                                            events_with_winners_view.c.winner_username, 
+                                            events_with_winners_view.c.winner_name).\
+        filter(events_with_winners_view.c.participant_id == username).all()
     
     return events_with_winners
+
 
 def is_organizer_allowed(username):
     # Query the OrganizersAllowed table to check if the organizer is allowed
