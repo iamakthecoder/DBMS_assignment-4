@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import null
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, Table, MetaData
 import bcrypt
 
 db = SQLAlchemy()
@@ -94,6 +94,9 @@ class OrganizersAllowed(db.Model):
     phone_number = db.Column(db.String(20), nullable=True)
     email = db.Column(db.String(100), nullable=True)
     allowed = db.Column(db.Boolean, nullable=False, default=False)
+
+global username_name_view
+username_name_view = None
 
 # Define the SQL command for the trigger function
 create_func_winner_update = """
@@ -200,6 +203,17 @@ FOR EACH ROW
 EXECUTE FUNCTION decrement_current_participants();
 """
 
+create_view_username_name = """
+CREATE VIEW username_name_view AS
+SELECT Users.username AS username,
+       COALESCE(Student.name, Participant.name, Organizer.name, Organizers_allowed.name) AS name
+FROM Users
+LEFT JOIN Student ON Student.user_name = Users.username
+LEFT JOIN Participant ON Participant.user_name = Users.username
+LEFT JOIN Organizer ON Organizer.user_name = Users.username
+LEFT JOIN Organizers_allowed ON Organizers_allowed.user_name = Users.username;
+"""
+
 def create_triggers_on_connect(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
 
@@ -273,6 +287,25 @@ def create_triggers_on_connect(dbapi_connection, connection_record):
         cursor.execute(create_trigger_decrement_current_participants)
         dbapi_connection.commit()
     
+    cursor.close()
+
+def create_views_on_connect(dbapi_connection, connection_record):
+    global username_name_view
+    cursor = dbapi_connection.cursor()
+
+    metadata = MetaData()
+    username_name_view = Table(
+        'username_name_view',
+        metadata,
+        # autoload=True,  # Corrected parameter name
+        autoload_with=db.engine
+    )
+    view_exists = db.engine.dialect.has_table(db.engine.connect(), 'username_name_view')
+    # If the view doesn't exist, create it
+    if not view_exists:
+        cursor.execute(create_view_username_name)
+        dbapi_connection.commit()
+
     cursor.close()
 
 def is_user_exists(username):
@@ -715,17 +748,11 @@ def check_venue_date(venueid, date):
             return True
         
 def get_name(username):
-    users_list = db.session.query(Users.username, func.coalesce(Student.name, Participant.name, Organizer.name, OrganizersAllowed.name)).\
-        outerjoin(Student, Student.user_name == Users.username).\
-        outerjoin(Participant, Participant.user_name == Users.username).\
-        outerjoin(Organizer, Organizer.user_name == Users.username).\
-        outerjoin(OrganizersAllowed, OrganizersAllowed.user_name == Users.username).\
-        filter(Users.username == username).first()
-    
-    if users_list:
-        return users_list[1]
+    result = db.session.query(username_name_view.c.name).filter(username_name_view.c.username == username).first()
+    if result:
+        name = result[0]
+        return name
     else:
         return None
-
 
 

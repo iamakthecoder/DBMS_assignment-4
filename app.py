@@ -481,5 +481,8 @@ if __name__=="__main__":
         with db.engine.connect() as connection:
             create_triggers_on_connect(connection.connection, None)
     with app.app_context():
+        with db.engine.connect() as connection:
+            create_views_on_connect(connection.connection, None)
+    with app.app_context():
         default_initialization()
     app.run(debug=True)
