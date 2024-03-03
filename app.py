@@ -107,8 +107,10 @@ def Student_dashboard():
         return redirect(url_for('index'))
     if session['user_type']!='Student':
         return redirect(url_for('index'))
+    
+    name = get_name(session['username'])
 
-    return render_template('student_dashboard.html')
+    return render_template('student_dashboard.html', name=name)
 
 @app.route('/Participant_dashboard')
 def Participant_dashboard():
@@ -116,8 +118,10 @@ def Participant_dashboard():
         return redirect(url_for('index'))
     if session['user_type']!='Participant':
         return redirect(url_for('index'))
+    
+    name = get_name(session['username'])
 
-    return render_template('participant_dashboard.html')
+    return render_template('participant_dashboard.html', name=name)
 
 @app.route('/Organizer_dashboard')
 def Organizer_dashboard():
@@ -130,7 +134,9 @@ def Organizer_dashboard():
     
     organizer_allowed = is_organizer_allowed(username)
 
-    return render_template('organizer_dashboard.html', allowed = organizer_allowed)
+    name = get_name(session['username'])
+
+    return render_template('organizer_dashboard.html', allowed = organizer_allowed, name=name)
 
 @app.route('/Admin_dashboard')
 def Admin_dashboard():
@@ -139,7 +145,9 @@ def Admin_dashboard():
     if session['user_type']!='Admin':
         return redirect(url_for('index'))
     
-    return render_template('admin_dashboard.html')
+    name = get_name(session['username'])
+    
+    return render_template('admin_dashboard.html', name=name)
 
 @app.route('/organizer_view_events')
 def organizer_view_events():
