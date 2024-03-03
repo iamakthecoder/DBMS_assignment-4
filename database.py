@@ -890,7 +890,8 @@ def get_event_details(event_id):
             'venue': venue.name if venue else None,
             'description' : event.description,
             'organizer_username': event.organizer_username,
-            'winner_username': event.winner_username
+            'winner_username': event.winner_username,
+            'organizer_name': get_name(event.organizer_username)
         }
     
     return None
