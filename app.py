@@ -112,6 +112,19 @@ def Student_dashboard():
 
     return render_template('student_dashboard.html', name=name)
 
+@app.route('/Student_profile')
+def student_profile():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Student':
+        return redirect(url_for('index'))
+    
+    username = session['username']
+    
+    student = get_student_details(username)
+    
+    return render_template('student_profile.html', student=student)
+
 @app.route('/Participant_dashboard')
 def Participant_dashboard():
     if 'username' not in session:
