@@ -112,6 +112,32 @@ def Student_dashboard():
 
     return render_template('student_dashboard.html', name=name)
 
+@app.route('/Student_profile')
+def student_profile():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Student':
+        return redirect(url_for('index'))
+    
+    username = session['username']
+    
+    student = get_student_details(username)
+    
+    return render_template('student_profile.html', student=student)
+
+@app.route('/Participant_profile')
+def participant_profile():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Participant':
+        return redirect(url_for('index'))
+    
+    username = session['username']
+    
+    participant = get_participant_details(username)
+    
+    return render_template('participant_profile.html', participant=participant)
+
 @app.route('/Participant_dashboard')
 def Participant_dashboard():
     if 'username' not in session:
@@ -121,7 +147,21 @@ def Participant_dashboard():
     
     name = get_name(session['username'])
 
-    return render_template('participant_dashboard.html', name=name)
+    return render_template('participant_dashboard.html', name=name)\
+    
+
+@app.route('/Organizer_profile')
+def Organizer_profile():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    if session['user_type']!='Organizer':
+        return redirect(url_for('index'))
+    
+    username = session['username']
+    
+    organizer = get_organizer_details(username)
+    
+    return render_template('organizer_profile.html', organizer=organizer)
 
 @app.route('/Organizer_dashboard')
 def Organizer_dashboard():

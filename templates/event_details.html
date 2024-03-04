@@ -47,6 +47,8 @@
                 <tr>
                     <th>Volunteer Name</th>
                     <th>Roll Number</th>
+                    <th>Phone Number</th>
+                    <th>Email</th>
                     <th>Assign Task</th>
                     <th>View Tasks</th>
                 </tr>
@@ -56,9 +58,10 @@
                 <tr>
                     <td>{{ volunteer.name }}</td>
                     <td>{{ volunteer.roll_number }}</td>
+                    <td>{{ volunteer.phone_number }}</td>
+                    <td>{{ volunteer.email }}</td>
                     <td><a href="/assign_task/{{event.id}}/{{volunteer.username}}" class="details-btn">Assign Task</a></td>
                     <td><a href="/tasks_status/{{event.id}}" class="details-btn">View Task</a></td>
-                    
                 </tr>
                 {% endfor %}
             </tbody>
