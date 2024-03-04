@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events</title>
+<link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='viewevent.css') }}">
+</head>
+<body>
+
+<!-- <h2>Registered as Participant</h2>
+<ul>
+  {% for event in participant_events %}
+  <li>
+    <strong>Name:</strong> {{ event.name }}<br>
+    <strong>Type:</strong> {{ event.type }}<br>
+    <strong>Date:</strong> {{ event.date }}
+  </li>
+  {% endfor %}
+</ul> -->
+<nav class="Navbar">
+    <h1 class="welcome1">Tasks</h1>
+    <a href="/dashboard" class="notification">Dashboard</a>
+    <a href="/notifications" class="notification">Notifications</a>
+
+    <a href="/logout" class="logout">Logout</a>
+    <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+</nav>
+    
+<h1 class="heading">Assigned Task</h1>
+    <h2 class="welcome">View Students</h2>
+  <div class="table">
+    <table class="students-table">
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Completed</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td>{{ task.task}}</td>
+          <td>{{task.completed}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+</body>
+</html>

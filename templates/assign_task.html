@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Event</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='signup.css') }}">
+<style>
+  .error-message {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+  <nav class="Navbar">
+    <h1 class="welcome1">Tasks</h1>
+    <a href="/dashboard" class="notification">Dashboard</a>
+    <a href="/notifications" class="notification">Notifications</a>
+
+    <a href="/logout" class="logout">Logout</a>
+    <!-- <img src="../static/images/logoutlogo.png" class="App-logo" alt="logo" /> -->
+</nav>
+
+<div class="signup1">
+  <h1 class="welcome">Assign task</h1>
+
+  <form id="event-form" action="/create_task/{{event_id}}/{{stud_username}}" method="POST">
+    <label for="description">Task Description</label>
+    <textarea id="task" name="task" class="input" required></textarea>
+
+    <input type="submit" value="Create Event" class="submit">
+  </form>
+</div>
+
+
+</body>
+</html>
