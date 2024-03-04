@@ -577,7 +577,9 @@ def get_event_volunteers(event_id):
     for event_volunteer, student in query:
         volunteers.append({
             'name': student.name,
-            'roll_number': student.roll_number
+            'roll_number': student.roll_number,
+            'phone_number': student.phone_number,
+            'email':student.email 
         })
     
     return volunteers
